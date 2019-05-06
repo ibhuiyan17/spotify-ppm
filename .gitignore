@@ -1,0 +1,10 @@
+# /.gitignore
+
+#misc
+.DS_Store
+authenticate.js
+requests_sample.http
+
+#examples
+web-api-auth-examples/
+
