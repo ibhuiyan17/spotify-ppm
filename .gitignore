@@ -4,6 +4,7 @@
 .DS_Store
 authenticate.js
 requests_sample.http
+node_modules
 
 #examples
 web-api-auth-examples/
