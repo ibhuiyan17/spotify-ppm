@@ -2,7 +2,7 @@
   "name": "spotify-ppp",
   "version": "1.0.0",
   "description": "After analyzing a user's recently played songs, create a personalized playlist aimed to boost productivity.",
-  "main": "server.js",
+  "main": "./server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"

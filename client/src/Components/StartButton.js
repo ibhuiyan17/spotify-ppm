@@ -13,20 +13,19 @@ const styles = theme => ({
 });
 
 class StartButton extends Component {
-	constructor () {
 
-	} 
 	
+
+	handleClick(e) {
+		var x = 5;
+	}
+
 	render () {
 		return (
 			<Button variant="contained" className="start-button" onClick={handleClick}>
 				Start
 			</Button>
 		);
-	}
-
-	handleClick (e) {
-		
 	}
 }
 
