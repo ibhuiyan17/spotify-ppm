@@ -13,20 +13,48 @@ const styles = theme => ({
 });
 
 class StartButton extends Component {
+  // Send request to server to initiate algorithm.
 
-	
+  constructor(props) {
+    super(props);
+    this.state = {
+      clicked: false,
+    };
 
-	handleClick(e) {
-		var x = 5;
-	}
+    this.handleClick = this.handleClick.bind(this);
+    this.callBackendAPI = this.callBackendAPI.bind(this);
+  }
 
-	render () {
-		return (
-			<Button variant="contained" className="start-button" onClick={handleClick}>
-				Start
-			</Button>
-		);
-	}
+  handleClick(e) {
+    e.preventDefault();
+    console.log('Clicked start button'); // eslint-disable-line no-console
+
+    this.setState({
+      clicked: true,
+    });
+
+    this.callBackendAPI();
+  }
+
+  callBackendAPI() {
+    fetch(this.props.targ)
+      .then((response) => {
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch(error => console.log(error));
+  }
+
+  render() {
+    return (
+      <Button variant="contained" className="start-button" onClick={this.handleClick}>
+        Start
+      </Button>
+    );
+  }
 }
 
 /*
