@@ -1,0 +1,31 @@
+#!/bin/bash
+# spotify-ppp start and stop scripts
+
+# Stop on errors
+set -e
+
+# Parse argument.  $1 is the first argument
+case $1 in
+  "start")
+    echo "starting servers on port 3000 & 3001"
+
+    # start backend server
+    node server/server.js &
+
+    # start and launch frontend
+    cd client/
+    npm start &
+    ;;
+
+  "stop")
+    echo "killing both servers"
+    kill -9 $(ps aux | grep '\snode\s' | awk '{print $2}')
+    ;;
+
+  "reset")
+    echo "restarting servers"
+    ./bin/spotify-ppp stop
+    ./bin/spotify-ppp start
+    ;;
+  *)
+esac
