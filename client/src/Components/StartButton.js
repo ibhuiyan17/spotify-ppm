@@ -61,5 +61,4 @@ class StartButton extends Component {
 StartButton.PropTypes = {
 
 }; */
-//export default StartButton;
 export default withStyles(styles)(StartButton);

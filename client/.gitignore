@@ -25,3 +25,4 @@ yarn-error.log*
 
 # examples
 /src/backend-connection.js
+/src/Components/App.css

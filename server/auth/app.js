@@ -17,7 +17,7 @@ var cookieParser = require('cookie-parser');
 
 var client_id = '3ccf5cf4aa5d4816b9128d9b59fb8ff5'; // Your client id
 var client_secret = 'fb7d0ff855e24e50a1a4aeeda182bc56'; // Your secret
-var redirect_uri = 'http://localhost:3000/'; // Your redirect uri
+var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -48,7 +48,7 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email';
+  var scope = 'user-read-private user-read-email user-top-read';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -106,13 +106,13 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('/#' +
+        res.redirect('http://localhost:3000/?' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token
           }));
       } else {
-        res.redirect('/#' +
+        res.redirect('http://localhost:3000/?' +
           querystring.stringify({
             error: 'invalid_token'
           }));
