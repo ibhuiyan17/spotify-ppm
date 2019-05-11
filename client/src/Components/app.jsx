@@ -1,15 +1,17 @@
+/* eslint-disable import/no-unresolved */
 import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
   Route,
 } from 'react-router-dom';
-import StartButton from './StartButton';
-import Tokens from './Tokens';
+import { connect } from 'react-redux';
+
+import StartButton from './start-button';
+import Tokens from './tokens';
 
 
 class Index extends Component {
   // Top level component for the app.
-
   constructor(props) {
     super(props);
     this.state = {
@@ -21,6 +23,7 @@ class Index extends Component {
   }
 
   handleTokenUpdate(access, refresh) {
+    // TODO: Do these tokens get updated after first set?
     this.setState({
       access_token: access,
       refresh_token: refresh,
@@ -46,4 +49,15 @@ class Index extends Component {
   }
 }
 
-export default Index;
+// redux
+const mapStateToProps = state => ({
+  tokens: state.tokens,
+  startButton: state.startButton,
+});
+
+/*
+const mapActionsToProps = {
+
+}; */
+
+export default connect(mapStateToProps, mapActionsToProps)(Index);
