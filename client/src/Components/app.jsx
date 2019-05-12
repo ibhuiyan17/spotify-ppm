@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 
 import StartButton from './start-button';
 import Tokens from './tokens';
+// import { updateTokens } from '../redux/actions/tokens-actions';
 
 
 class Index extends Component {
@@ -35,16 +36,16 @@ class Index extends Component {
 
   render() {
     return (
-      <Router>
-        <div>
-          <h1>Spotify: Personalized Productivity Playlist</h1>
+      <div>
+        <h1>Spotify: Personalized Productivity Playlist</h1>
+        <Router>
           <Route
             path='/'
             render={props => <Tokens {...props} handler={this.handleTokenUpdate} />}
           />
-          <StartButton targ={'/api/recents'}/>
-        </div>
-      </Router>
+        </Router>
+        <StartButton targ={'/api/recents'}/>
+      </div>
     );
   }
 }
@@ -58,6 +59,7 @@ const mapStateToProps = state => ({
 /*
 const mapActionsToProps = {
 
-}; */
+};  */
 
-export default connect(mapStateToProps, mapActionsToProps)(Index);
+// export default connect(mapStateToProps, mapActionsToProps)(Index);
+export default Index;
