@@ -4,47 +4,38 @@ const express = require('express');
 const SpotifyRequests = require('./spotify-requests');
 
 const auth = require('./auth/app');
+const utils = require('./utils');
 
 const app = express();
 const port = process.env.PORT || 3001;
-
-// let topTracks = [];
-
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
+const token = 'BQByEtbkQZbqTPW2v_Run8owbEJ5jMSDibXERDepqJXxuMWrK4naG0cQR6d5uVfUX8Xi_A5ikNBuPSslGdngTsH9OOI7xrY_Mg81O2EB7SLLDg1Zi4lLsD83p3m0OMj8_a0-isLqpCq57tYZ5zDJDMWbFXPw-_YCGRsdxbo5TJpyqY1AXw';
+const spotify = new SpotifyRequests(token);
+let topTracks = []; // array of track objects containing trackID, name, and list of artists
+let averageFeatures = {};
+
+/*
+  input: array of track objects
+  output: object containing average features of input tracks
+*/
+function getAverageFeatures(trackList) {
+  spotify.getFeatures(trackList.map(track => track.trackID))
+    .then(spotifyResponse => utils.calculateAverageFeatures(spotifyResponse));
+}
 
 // GET route
-app.get('/api/recents', (req, res) => {
-  const token = 'BQDBODXtceDr16hPSS6G9lwOgKi7wiGrsklNR_7etvwiSrQZYMr-G1L4lW3TeTJAP_jwp6SoNdXe4vMH0dGFe1mJToOKOQSiy8sskVVtm3rMDSTUE8rgGEitc8CkkMj9dzq9K9-ujHjdim9GOUsL4-YZhJp64-HOEryeeaOcHr3oY0I6Gg';
-  const spotify = new SpotifyRequests(token);
-
-  spotify.getTopTracks()
+app.get('/api/top', (req, res) => {
+  spotify.getTopTracks(req.query.time_range)
     .then((spotifyResponse) => {
-      const topTracks = spotifyResponse.map(trackObject => ({ // filter tracklist array
-        trackID: trackObject.id,
-        name: trackObject.name,
-        artists: trackObject.artists.map(artistObj => artistObj.name),
-      }));
-      res.send(topTracks);
-    });
-  /*
-  spotify.getTopTracks()
-    .then((data) => {
-      console.log(data.items);
-      // topTracks = [...data.items];
-      // console.log(topTracks);
+      topTracks = utils.filterTrackList(spotifyResponse);
+      averageFeatures = getAverageFeatures(topTracks);
+      res.send(averageFeatures);
     })
-    .catch((reject) => {
-      console.log(reject);
-    }); */
-
-  /*
-  res.send(spotify.getTopTracks().then((data) => {
-    console.log(data);
-  }) */
+    .catch(() => res.send('error'));
 });
 
 // Start server and listen on port
