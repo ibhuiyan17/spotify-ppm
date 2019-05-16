@@ -1,6 +1,54 @@
+/* eslint-disable no-use-before-define */
 
-// filter metadata out of array returned by Spotify
-function filterTrackList(trackList) {
+/*
+  input: spotify request object, desired time range
+  output: filtered array containing top tracks
+*/
+async function getFilteredTopTracks(spotifyInstance, timeRange) {
+  try {
+    return $filterTrackList(await spotifyInstance.getTopTracks(timeRange));
+  } catch (err) {
+    return err;
+  }
+}
+
+/*
+  input: spotify request object, array of track objects
+  output: object containing average features of input tracks
+*/
+async function calculateAverageFeatures(spotifyInstance, trackList) {
+  const averageFeatures = {};
+
+  // build set of features to exclude
+  const excludeSet = {};
+  [
+    'key', 'mode', 'type', 'id', 'uri', 'track_href', 'analysis_url', 'duration_ms', 'time_signature',
+  ].forEach((feature) => {
+    excludeSet[feature] = true;
+  });
+
+  // get list of features then calculate the average values
+  try {
+    const featureList = await spotifyInstance.getFeatures(trackList.map(track => track.trackID));
+    const lenFeatureList = featureList.length;
+    featureList.forEach((featureObj) => {
+      Object.keys(featureObj).forEach((feature) => {
+        if (feature in excludeSet === false) { // only consider important features
+          if (feature in averageFeatures === false) { // initialize feature if not present
+            averageFeatures[feature] = 0;
+          }
+          averageFeatures[feature] += (featureObj[feature] / lenFeatureList);
+        }
+      });
+    });
+    return averageFeatures;
+  } catch (err) {
+    return err;
+  }
+}
+
+// $(helper func.) filter metadata out of array returned by Spotify
+function $filterTrackList(trackList) {
   return trackList.map(trackObj => ({ // filter tracklist array
     trackID: trackObj.id,
     name: trackObj.name,
@@ -8,38 +56,7 @@ function filterTrackList(trackList) {
   }));
 }
 
-// return object containing average features
-function calculateAverageFeatures(featureList) {
-  const averageFeatures = {
-    danceability: 0,
-    energy: 0,
-    loudness: 0,
-    speechiness: 0,
-    acousticness: 0,
-    instrumentalness: 0,
-    liveness: 0,
-    valence: 0,
-    tempo: 0,
-    duration: 0,
-  };
-
-  const lenFeatureList = featureList.length;
-  featureList.forEach((featureObj) => {
-    // console.log('this is a feature object: ', featureObj);
-    Object.keys(featureObj).forEach((feature) => {
-      // filter out unimportant features
-      if (feature in averageFeatures) {
-        // console.log(featureObj.feature);
-        averageFeatures[feature] += (featureObj[feature] / lenFeatureList);
-      }
-    });
-  });
-  console.log('average features: ', averageFeatures);
-
-  return averageFeatures;
-}
-
 module.exports = {
-  filterTrackList,
+  getFilteredTopTracks,
   calculateAverageFeatures,
 };
