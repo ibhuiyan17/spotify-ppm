@@ -13,20 +13,19 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
-const token = 'BQCYhqdgQAj03Kbf_kFUb3La1iVuq_ka-8mBZvEk1gJeZ8b_FmjMU-IfU-Rvdklm4gKeiOvSoKzy-hK-H0zUJM6iKcn-wCx11J8mix_STA0SWXC63Hb4VNmMBwODvIuJVp5qtRwtdJB-LlKwcoDpw7tokSeEgWv6QoBxqGcSj3qsg79D-g';
+const token = 'BQCstfg3nAK2-WNTAM2ffREoGyC9zyBEwrcEWYw1GoeoUn0rlUIcDMDkwj0zlONKDUFVu0CCGWs4Qz5u4tbjC7HlPkFV9O0t3Tr8kVxYhr4oKK62WuICwA3oskzbPQ6uuGlqZ7tx8m7reIIom2tl86hUzHdqizgnICeUWUSO72rooFiA6w';
 const spotify = new SpotifyRequests(token);
 let topTracks = []; // array of track objects containing trackID, name, and list of artists
-let averageFeatures = {};
-let medianFeatures = {};
+let featureAnalysis = {};
 
 // GET route
 app.get('/api/top', async (req, res) => {
   try {
     // get top tracks and filter results
     topTracks = await utils.getFilteredTopTracks(spotify, req.query.time_range);
-    averageFeatures = await utils.calculateAverageFeatures(spotify, topTracks);
-    medianFeatures = await utils.calculateMedianFeatures(spotify, topTracks);
-    res.send(medianFeatures);
+    featureAnalysis = await utils.calculateFeatureAnalysis(spotify, topTracks);
+
+    res.send(featureAnalysis);
   } catch (err) {
     console.log(err);
   }

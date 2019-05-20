@@ -23,7 +23,7 @@ module.exports = class SpotifyRequests {
     try {
       const response = await this.instance.get('me/top/tracks', {
         params: {
-          limit: 50,
+          limit: 10,
           time_range: timeRange,
         },
       });

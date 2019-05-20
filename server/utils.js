@@ -1,4 +1,6 @@
 /* eslint-disable no-use-before-define */
+const stats = require('simple-statistics');
+
 
 /*
   input: spotify request object, desired time range
@@ -6,7 +8,7 @@
 */
 async function getFilteredTopTracks(spotifyInstance, timeRange) {
   try {
-    return (await spotifyInstance.getTopTracks(timeRange)).map(trackObj => ({ // filter tracklist array
+    return (await spotifyInstance.getTopTracks(timeRange)).map(trackObj => ({ // filter tracklist
       trackID: trackObj.id,
       name: trackObj.name,
       artists: trackObj.artists.map(artistObj => artistObj.name),
@@ -16,110 +18,82 @@ async function getFilteredTopTracks(spotifyInstance, timeRange) {
   }
 }
 
-/*
-  input: spotify request object, array of track objects
-  output: object containing median features of input tracks
-*/
-async function calculateMedianFeatures(spotifyInstance, trackList) {
-  const medianFeatures = {}; // {feature -> median/list -> result}
 
-  // build set of features to exclude
-  const excludeSet = {};
+/*
+  input: spotify request object, desired time range
+  output: feature analysis object containing feature to corresponding
+          mean, median, and standard deviation of features.
+*/
+async function calculateFeatureAnalysis(spotifyInstance, trackList) {
+  const analysisObject = {}; // {feature -> mean/median/stdev}
+
+  // build set of features to include
+  const includeSet = {};
   [
-    'key', 'mode', 'type', 'id', 'uri', 'track_href', 'analysis_url', 'duration_ms', 'time_signature',
+    'danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo',
   ].forEach((feature) => {
-    excludeSet[feature] = true;
+    includeSet[feature] = true;
   });
 
   try {
+    // populate helper object and initialize return object
+    const featureToValues = {}; // helper object {feature -> list of values}
     const featureList = await spotifyInstance.getFeatures(trackList.map(track => track.trackID));
-    const lenFeatureList = featureList.length;
     featureList.forEach((featureObj) => {
       Object.keys(featureObj).forEach((feature) => {
-        if (feature in excludeSet === false) { // only consider important features
-          if (feature in medianFeatures === false) { // initialize feature if not present
-            medianFeatures[feature] = {
-              median: 0,
-              list: [],
-            };
+        if (feature in includeSet) {
+          if (feature in featureToValues === false) { // initialize object keys
+            analysisObject[feature] = {};
+            featureToValues[feature] = [];
           }
-          medianFeatures[feature].list.push(featureObj[feature]);
+          featureToValues[feature].push(featureObj[feature]);
         }
       });
     });
-    console.log(medianFeatures);
 
-    const type = (lenFeatureList % 2 === 0) ? 'even' : 'odd';
-    Object.keys(medianFeatures).forEach((feature) => {
-      console.log('feature list: ', medianFeatures[feature].list);
-      medianFeatures[feature].list.sort((a, b) => a - b);
-      switch (type) {
-        case 'even':
-          medianFeatures[feature].median = (medianFeatures[feature].list[(lenFeatureList / 2) - 1] + medianFeatures[feature].list[lenFeatureList / 2]) / 2;
-          break;
-        case 'odd':
-          medianFeatures[feature].median = feature.list[Math.floor(lenFeatureList / 2)];
-          break;
-        default:
-          break;
-      }
+    // populate return object
+    Object.keys(featureToValues).forEach((feature) => {
+      const valuesArray = featureToValues[feature];
+      valuesArray.sort((a, b) => a - b);
+      analysisObject[feature].mean = $calculateMean(valuesArray);
+      analysisObject[feature].median = $calculateMedian(valuesArray);
+      analysisObject[feature].stdev = stats.sampleStandardDeviation(valuesArray);
     });
-    console.log('median features');
-    return medianFeatures;
+    return analysisObject;
   } catch (err) {
-    console.log('err');
     console.log(err);
     return err;
   }
 }
 
-/*
-  input: spotify request object, array of track objects
-  output: object containing average features of input tracks
-*/
-async function calculateAverageFeatures(spotifyInstance, trackList) {
-  // console.log('size: ', trackList.length, trackList);
-  const averageFeatures = {};
 
-  // build set of features to exclude
-  const excludeSet = {};
-  [
-    'key', 'mode', 'type', 'id', 'uri', 'track_href', 'analysis_url', 'duration_ms', 'time_signature',
-  ].forEach((feature) => {
-    excludeSet[feature] = true;
+// ($helper func.) calculate mean of array
+function $calculateMean(array) {
+  const arrayLen = array.length;
+  let average = 0;
+  array.forEach((value) => {
+    average += (value / arrayLen);
   });
 
-  // get list of features then calculate the average values
-  try {
-    const featureList = await spotifyInstance.getFeatures(trackList.map(track => track.trackID));
-    const lenFeatureList = featureList.length;
-    featureList.forEach((featureObj) => {
-      Object.keys(featureObj).forEach((feature) => {
-        if (feature in excludeSet === false) { // only consider important features
-          if (feature in averageFeatures === false) { // initialize feature if not present
-            averageFeatures[feature] = 0;
-          }
-          averageFeatures[feature] += (featureObj[feature] / lenFeatureList);
-        }
-      });
-    });
-    return averageFeatures;
-  } catch (err) {
-    return err;
-  }
+  return average;
 }
 
-// $(helper func.) filter metadata out of array returned by Spotify
-function $filterTrackList(trackList) {
-  return trackList.map(trackObj => ({ // filter tracklist array
-    trackID: trackObj.id,
-    name: trackObj.name,
-    artists: trackObj.artists.map(artistObj => artistObj.name),
-  }));
+// ($helper func.) calculate median of array
+function $calculateMedian(array) {
+  const arrayLen = array.length;
+  const type = (arrayLen % 2 === 0) ? 'even' : 'odd';
+
+  switch (type) {
+    case 'even':
+      return (array[(arrayLen / 2) - 1] + array[arrayLen / 2]) / 2;
+    case 'odd':
+      return array[Math.floor(arrayLen / 2)];
+    default:
+      return null;
+  }
 }
 
 module.exports = {
   getFilteredTopTracks,
-  calculateMedianFeatures,
-  calculateAverageFeatures,
+  calculateFeatureAnalysis,
 };
