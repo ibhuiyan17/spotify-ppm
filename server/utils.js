@@ -12,6 +12,21 @@ async function getFilteredTopTracks(spotifyInstance, timeRange) {
       trackID: trackObj.id,
       name: trackObj.name,
       artists: trackObj.artists.map(artistObj => artistObj.name),
+      preview_url: trackObj.preview_url,
+      images: trackObj.album.images,
+    }));
+  } catch (err) {
+    return err;
+  }
+}
+
+async function getFilteredTopArtists(spotifyInstance, timeRange) {
+  try {
+    return (await spotifyInstance.getTopArtists(timeRange)).map(artistObj => ({
+      artistID: artistObj.id,
+      name: artistObj.name,
+      genres: artistObj.genres,
+      images: artistObj.images,
     }));
   } catch (err) {
     return err;
@@ -50,7 +65,6 @@ async function calculateFeatureAnalysis(spotifyInstance, trackList) {
         }
       });
     });
-
     // populate return object
     Object.keys(featureToValues).forEach((feature) => {
       const valuesArray = featureToValues[feature];
@@ -95,5 +109,6 @@ function $calculateMedian(array) {
 
 module.exports = {
   getFilteredTopTracks,
+  getFilteredTopArtists,
   calculateFeatureAnalysis,
 };

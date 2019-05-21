@@ -33,6 +33,20 @@ module.exports = class SpotifyRequests {
     }
   }
 
+  async getTopArtists(timeRange) {
+    try {
+      const response = await this.instance.get('me/top/artists', {
+        params: {
+          limit: 5,
+          time_range: timeRange,
+        },
+      });
+      return response.data.items;
+    } catch (err) {
+      return err;
+    }
+  }
+
   /* return a list of selected track features.
     input: array of trackIDs
     output: array of features for selected trackIDs
