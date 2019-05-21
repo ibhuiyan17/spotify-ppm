@@ -23,7 +23,7 @@ module.exports = class SpotifyRequests {
     try {
       const response = await this.instance.get('me/top/tracks', {
         params: {
-          limit: 10,
+          limit: 50,
           time_range: timeRange,
         },
       });
@@ -33,11 +33,15 @@ module.exports = class SpotifyRequests {
     }
   }
 
+  /* return a list of user's top 50 favorite artists.
+    input: desired time range
+    output: list of user's top tracks with metadata
+  */
   async getTopArtists(timeRange) {
     try {
       const response = await this.instance.get('me/top/artists', {
         params: {
-          limit: 5,
+          limit: 50,
           time_range: timeRange,
         },
       });

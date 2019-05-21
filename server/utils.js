@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
-const stats = require('simple-statistics');
-
+const stats = require('simple-statistics'); // utility library for common stats funcs.
+const buckets = require('buckets-js'); // utility library for common js data structures
 
 /*
   input: spotify request object, desired time range
@@ -20,6 +20,11 @@ async function getFilteredTopTracks(spotifyInstance, timeRange) {
   }
 }
 
+
+/*
+  input: spotify request object, desired time range
+  output: filtered array containing top artists
+*/
 async function getFilteredTopArtists(spotifyInstance, timeRange) {
   try {
     return (await spotifyInstance.getTopArtists(timeRange)).map(artistObj => ({
@@ -81,6 +86,47 @@ async function calculateFeatureAnalysis(spotifyInstance, trackList) {
 }
 
 
+/*
+  input: filtered array of top artists
+  output: top k genres among top artists
+*/
+function calculateTopKGenres(topArtists, k) {
+  // const priorityQueue = buckets.PriorityQueue((a, b) => a - b);
+  const genreToFreqMap = {};
+
+  topArtists.forEach((artistObj) => {
+    artistObj.genres.forEach((genre) => {
+      if (genre in genreToFreqMap === false) {
+        genreToFreqMap[genre] = 0;
+      }
+      genreToFreqMap[genre] += 1;
+    });
+  });
+
+  console.log('genreToFreqMap', genreToFreqMap);
+
+  const genreToFreqArr = [];
+  Object.keys(genreToFreqMap).forEach((genre) => {
+    const freqObj = {};
+    freqObj[genre] = genreToFreqMap[genre];
+    genreToFreqArr.push(freqObj);
+  });
+  genreToFreqArr.sort((freqObj1, freqObj2) => {
+    return freqObj2[Object.keys(freqObj2)[0]] - freqObj1[Object.keys(freqObj1)[0]];
+  });
+  // return genreToFreqArr.slice(0, k);
+  return genreToFreqArr.slice(0, k).map(freqObj => Object.keys(freqObj)[0]);
+}
+
+
+/*
+  input: spotify request object, query object to seed reccommendations
+  output: array of track object that fit query
+*/
+function getTargetReccommendations(spotify, queryObject) {
+  return { hello: 'hi' };
+}
+
 // ($helper func.) calculate mean of array
 function $calculateMean(array) {
   const arrayLen = array.length;
@@ -111,4 +157,6 @@ module.exports = {
   getFilteredTopTracks,
   getFilteredTopArtists,
   calculateFeatureAnalysis,
+  calculateTopKGenres,
+  getTargetReccommendations,
 };
