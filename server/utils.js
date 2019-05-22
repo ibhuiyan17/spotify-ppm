@@ -103,8 +103,6 @@ function calculateTopKGenres(topArtists, k) {
     });
   });
 
-  console.log('genreToFreqMap', genreToFreqMap);
-
   const genreToFreqArr = [];
   Object.keys(genreToFreqMap).forEach((genre) => {
     const freqObj = {};
@@ -120,11 +118,27 @@ function calculateTopKGenres(topArtists, k) {
 
 
 /*
-  input: spotify request object, query object to seed reccommendations
+  input: spotify request object, query object to seed recommendations
   output: array of track object that fit query
 */
-function getTargetReccommendations(spotify, queryObject) {
-  return { hello: 'hi' };
+async function getTargetRecommendations(spotifyInstance, queryObject) {
+  const searchParams = {};
+  searchParams.seed_artists = queryObject.topArtists.slice(0, 2).map((artistObj) => {
+    return artistObj.artistID;
+  }).toString();
+  searchParams.seed_genres = queryObject.topKGenres.slice(0, 3).toString();
+
+  Object.keys(queryObject.featureAnalysis).forEach((feature) => {
+    searchParams[`target_${feature}`] = queryObject.featureAnalysis[feature].median;
+  });
+
+  console.log(searchParams);
+
+  try {
+    return (await spotifyInstance.getRecommendations(searchParams));
+  } catch (err) {
+    return err;
+  }
 }
 
 // ($helper func.) calculate mean of array
@@ -158,5 +172,5 @@ module.exports = {
   getFilteredTopArtists,
   calculateFeatureAnalysis,
   calculateTopKGenres,
-  getTargetReccommendations,
+  getTargetRecommendations,
 };

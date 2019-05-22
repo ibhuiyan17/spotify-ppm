@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
-const token = 'BQBB3HhQm0ef2O0QccMtlFLXohr2AZ4nkt_VwtnN1dQP4Na6LizLOzwt3aQf6VhP13bIyZFh4DCDUx8RjK8etNEBy3RC5nvUapKfRp6zaNuAOCGMaJdTBmo8h8Y36HzkVZm69Z0UKQKy6Rtu3sFAWTlm227WvDQzZenKHydGx0VYEs1R6A';
+const token = 'BQBwg_GfLyoaxbtNCxr2wsambEOGjLEBFD7Rd6BmSdZ-zV0cSykW0noO4FhvGiC1gD6RzlMoabg-XlC7PtBFpzGTjdr22_hGxONU-3fnliKLHxLQqxSkgAr3uYGTYNDHMHzJj61G26Zvv_kfe4rCrJKZAiBuEpewnvOE8VU5dmwO_2UTAw';
 const spotify = new SpotifyRequests(token);
 const returnObject = {};
 
@@ -34,11 +34,11 @@ app.get('/api/top', async (req, res) => {
     returnObject.searchQueries.topArtists = [...userTop[1]];
     returnObject.searchQueries.featureAnalysis = featureAnalysis;
     returnObject.searchQueries.topKGenres = [...topGenres];
-    returnObject.recommendations = await utils.getTargetReccommendations(
+    returnObject.recommendations = await utils.getTargetRecommendations(
       spotify,
       returnObject.searchQueries,
     );
-    
+
     res.send(returnObject);
   } catch (err) {
     console.log('err');

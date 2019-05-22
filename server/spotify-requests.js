@@ -67,4 +67,28 @@ module.exports = class SpotifyRequests {
       return err;
     }
   }
+
+  async getAvailableGenreSeeds() {
+    try {
+      const response = await this.instance.get('recommendations/available-genre-seeds');
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  }
+
+  /* return a list of reccommended tracks based on seeds.
+    input:
+    output:
+  */
+  async getRecommendations(searchParams) {
+    try {
+      const response = await this.instance.get('recommendations', {
+        params: searchParams,
+      });
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  }
 };
