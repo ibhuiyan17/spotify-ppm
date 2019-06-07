@@ -71,8 +71,10 @@ module.exports = class SpotifyRequests {
   async getAvailableGenreSeeds() {
     try {
       const response = await this.instance.get('recommendations/available-genre-seeds');
-      return response.data;
+      // console.log(response.data);
+      return response.data.genres;
     } catch (err) {
+      console.log('error');
       return err;
     }
   }

@@ -13,25 +13,31 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
-const token = 'BQBwg_GfLyoaxbtNCxr2wsambEOGjLEBFD7Rd6BmSdZ-zV0cSykW0noO4FhvGiC1gD6RzlMoabg-XlC7PtBFpzGTjdr22_hGxONU-3fnliKLHxLQqxSkgAr3uYGTYNDHMHzJj61G26Zvv_kfe4rCrJKZAiBuEpewnvOE8VU5dmwO_2UTAw';
+const token = 'BQAEnBOTi3xE53fqeVpSAKqH0qOA_0kRMdBnf38WovdHDmHKrK-0QHpt2exYIR-SsFuSYL4ba9DrCgUPvspCad19IcVy_ZTcLwhVIbZoeC982PzoeEXxUNZFU0eQzfGYiN7YDhqJLTRo9sTA-nuFPCPgqwEoAQUopji1LB4KGv6CFa0XmA';
 const spotify = new SpotifyRequests(token);
 const returnObject = {};
+const NUM_TOTAL_SEEDS = 5; // max number of seeds suppoprted by spotify api
 
 
 // GET route
 app.get('/api/top', async (req, res) => {
   returnObject.searchQueries = {};
   try {
-    // userTop[0] contains array of filtered topTracks, userTop[1] contains array of filtered topArtists
-    const userTop = await Promise.all([
+    /*
+      initRequests[0] contains array of filtered topTracks
+      initRequests[1] contains array of filtered topArtists
+      initRequests[3] contains Spotify's availanle genre seeds
+    */
+    const initRequests = await Promise.all([
       utils.getFilteredTopTracks(spotify, req.query.time_range),
       utils.getFilteredTopArtists(spotify, req.query.time_range),
     ]);
-    const featureAnalysis = await utils.calculateFeatureAnalysis(spotify, userTop[0]);
-    const topGenres = utils.calculateTopKGenres(userTop[1]);
 
-    returnObject.searchQueries.topTracks = [...userTop[0]];
-    returnObject.searchQueries.topArtists = [...userTop[1]];
+    const featureAnalysis = await utils.calculateFeatureAnalysis(spotify, initRequests[0]);
+    const topGenres = await utils.calculateTopKGenres(spotify, initRequests[1], req.query.num_genres);
+
+    returnObject.searchQueries.topTracks = [...initRequests[0]];
+    returnObject.searchQueries.topArtists = [...initRequests[1]];
     returnObject.searchQueries.featureAnalysis = featureAnalysis;
     returnObject.searchQueries.topKGenres = [...topGenres];
     returnObject.recommendations = await utils.getTargetRecommendations(

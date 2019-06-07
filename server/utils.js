@@ -1,6 +1,5 @@
 /* eslint-disable no-use-before-define */
 const stats = require('simple-statistics'); // utility library for common stats funcs.
-const buckets = require('buckets-js'); // utility library for common js data structures
 
 /*
   input: spotify request object, desired time range
@@ -90,32 +89,50 @@ async function calculateFeatureAnalysis(spotifyInstance, trackList) {
   input: filtered array of top artists
   output: top k genres among top artists
 */
-function calculateTopKGenres(topArtists, k) {
-  // const priorityQueue = buckets.PriorityQueue((a, b) => a - b);
-  const genreToFreqMap = {};
-
-  topArtists.forEach((artistObj) => {
-    artistObj.genres.forEach((genre) => {
-      if (genre in genreToFreqMap === false) {
-        genreToFreqMap[genre] = 0;
-      }
-      genreToFreqMap[genre] += 1;
+async function calculateTopKGenres(spotifyInstance, topArtists, k) {
+  const availableGenres = {}; // set of available/relevant genres for seed recs
+  const genreToFreqMap = {}; // {genre -> freq}
+  const genreToFreqArr = []; // array of relevant genres sorted by frequency
+  try {
+    // build set of available genres
+    const genreList = await spotifyInstance.getAvailableGenreSeeds();
+    genreList.forEach((genre) => {
+      availableGenres[genre.split('-').join(' ')] = true;
     });
-  });
 
-  const genreToFreqArr = [];
-  Object.keys(genreToFreqMap).forEach((genre) => {
-    const freqObj = {};
-    freqObj[genre] = genreToFreqMap[genre];
-    genreToFreqArr.push(freqObj);
-  });
-  genreToFreqArr.sort((freqObj1, freqObj2) => {
-    return freqObj2[Object.keys(freqObj2)[0]] - freqObj1[Object.keys(freqObj1)[0]];
-  });
-  // return genreToFreqArr.slice(0, k);
-  return genreToFreqArr.slice(0, k).map(freqObj => Object.keys(freqObj)[0]);
+    console.log(topArtists);
+    // populate frequency map
+    topArtists.forEach((artistObj) => {
+      artistObj.genres.forEach((genre) => {
+        if (genre in genreToFreqMap === false) {
+          genreToFreqMap[genre] = 0;
+        }
+        genreToFreqMap[genre] += 1;
+      });
+    });
+
+    // add available genres to array and sort by freq
+    Object.keys(genreToFreqMap).forEach((genre) => {
+      if (genre in availableGenres) {
+        const freqObj = {}; // {relevant genre -> freq}
+        freqObj[genre] = genreToFreqMap[genre];
+        genreToFreqArr.push(freqObj);
+      }
+      /*
+      const freqObj = {}; // {relevant genre -> freq}
+      freqObj[genre] = genreToFreqMap[genre];
+      genreToFreqArr.push(freqObj);
+      */
+    });
+    genreToFreqArr.sort((freqObj1, freqObj2) => {
+      return freqObj2[Object.keys(freqObj2)[0]] - freqObj1[Object.keys(freqObj1)[0]];
+    });
+    return genreToFreqArr.slice(0, k).map(freqObj => Object.keys(freqObj)[0]);
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
 }
-
 
 /*
   input: spotify request object, query object to seed recommendations
@@ -131,8 +148,6 @@ async function getTargetRecommendations(spotifyInstance, queryObject) {
   Object.keys(queryObject.featureAnalysis).forEach((feature) => {
     searchParams[`target_${feature}`] = queryObject.featureAnalysis[feature].median;
   });
-
-  console.log(searchParams);
 
   try {
     return (await spotifyInstance.getRecommendations(searchParams));
