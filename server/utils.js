@@ -97,32 +97,29 @@ async function calculateTopKGenres(spotifyInstance, topArtists, k) {
     // build set of available genres
     const genreList = await spotifyInstance.getAvailableGenreSeeds();
     genreList.forEach((genre) => {
-      availableGenres[genre.split('-').join(' ')] = true;
+      availableGenres[genre] = true;
     });
 
-    console.log(topArtists);
-    // populate frequency map
+    // populate frequency map with relevant genres
     topArtists.forEach((artistObj) => {
       artistObj.genres.forEach((genre) => {
-        if (genre in genreToFreqMap === false) {
-          genreToFreqMap[genre] = 0;
+        const formattedGenre = genre.split(' ').join('-'); // format for api
+        if (formattedGenre in genreToFreqMap === false) {
+          if (formattedGenre in availableGenres) {
+            genreToFreqMap[formattedGenre] = 1; // adds to map if not present
+          }
+        } else {
+          genreToFreqMap[formattedGenre] += 1;
         }
-        genreToFreqMap[genre] += 1;
       });
     });
+    console.log(genreToFreqMap);
 
     // add available genres to array and sort by freq
     Object.keys(genreToFreqMap).forEach((genre) => {
-      if (genre in availableGenres) {
-        const freqObj = {}; // {relevant genre -> freq}
-        freqObj[genre] = genreToFreqMap[genre];
-        genreToFreqArr.push(freqObj);
-      }
-      /*
       const freqObj = {}; // {relevant genre -> freq}
       freqObj[genre] = genreToFreqMap[genre];
       genreToFreqArr.push(freqObj);
-      */
     });
     genreToFreqArr.sort((freqObj1, freqObj2) => {
       return freqObj2[Object.keys(freqObj2)[0]] - freqObj1[Object.keys(freqObj1)[0]];
@@ -135,19 +132,21 @@ async function calculateTopKGenres(spotifyInstance, topArtists, k) {
 }
 
 /*
-  input: spotify request object, query object to seed recommendations
+  input: spotify request object, feature analysis object,
+          array of genres, and array of artist IDs to seed recommendations
   output: array of track object that fit query
 */
-async function getTargetRecommendations(spotifyInstance, queryObject) {
+async function getTargetRecommendations(spotifyInstance, featureAnalysisObject, genresArray, artistsArray) {
   const searchParams = {};
-  searchParams.seed_artists = queryObject.topArtists.slice(0, 2).map((artistObj) => {
-    return artistObj.artistID;
-  }).toString();
-  searchParams.seed_genres = queryObject.topKGenres.slice(0, 3).toString();
+  searchParams.seed_genres = genresArray.toString();
+  searchParams.seed_artists = artistsArray.toString();
 
-  Object.keys(queryObject.featureAnalysis).forEach((feature) => {
-    searchParams[`target_${feature}`] = queryObject.featureAnalysis[feature].median;
+  Object.keys(featureAnalysisObject).forEach((feature) => {
+    searchParams[`target_${feature}`] = featureAnalysisObject[feature].median;
   });
+  searchParams.target_danceability = 1;
+  searchParams.target_energy = 1;
+  console.log(searchParams);
 
   try {
     return (await spotifyInstance.getRecommendations(searchParams));
