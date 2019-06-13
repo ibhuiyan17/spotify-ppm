@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
-const token = 'BQBx6OY7fM7o-azAvHXcXbIbqLNe6HOUUQqsZmqOAoBTCwZEmpIAsUyNe598HLBmJRZsBFSuI23ks1D8pXB4_g46egV6cs1H7CNQIo4xlNT3D54Tz7n8maE3wng2QvssZ35dyOEqfQditWXMG_RvmgGMqbYhZEOx5XFC7eSCypvXoJZ6hg';
+const token = 'BQBqzb_1TVHVIHWPCy7Wg8bjZazzQOLJ4YW8jUW8pgljEjLlDERevaaHz0_QNaNTUjDQTWK_suiKBZKc6qTzxuUmyhleeb__WLG6Gl5znuPOsdO8A4advZDb1fWrWxhlrRioUhBdVTwgrlI-Pt_v2UqXJUMA9E_9JBenu0Mz91hm2ss94Q';
 const spotify = new SpotifyRequests(token);
 const NUM_TOTAL_SEEDS = 5; // max number of seeds suppoprted by spotify api
 

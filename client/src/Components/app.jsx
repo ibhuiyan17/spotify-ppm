@@ -4,11 +4,9 @@ import {
   BrowserRouter as Router,
   Route,
 } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 import StartButton from './start-button';
 import Tokens from './tokens';
-// import { updateTokens } from '../redux/actions/tokens-actions';
 
 
 class Index extends Component {
@@ -50,16 +48,4 @@ class Index extends Component {
   }
 }
 
-// redux
-const mapStateToProps = state => ({
-  tokens: state.tokens,
-  startButton: state.startButton,
-});
-
-/*
-const mapActionsToProps = {
-
-};  */
-
-// export default connect(mapStateToProps, mapActionsToProps)(Index);
 export default Index;
