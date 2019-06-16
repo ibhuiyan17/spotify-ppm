@@ -14,8 +14,9 @@ async function getFilteredTopTracks(spotifyInstance, timeRange) {
       preview_url: trackObj.preview_url,
       images: trackObj.album.images,
     }));
-  } catch (err) {
-    return err;
+  } catch (error) {
+    console.log(error);
+    return error;
   }
 }
 
@@ -32,8 +33,9 @@ async function getFilteredTopArtists(spotifyInstance, timeRange) {
       genres: artistObj.genres,
       images: artistObj.images,
     }));
-  } catch (err) {
-    return err;
+  } catch (error) {
+    console.log(error);
+    return error;
   }
 }
 
@@ -78,9 +80,9 @@ async function calculateFeatureAnalysis(spotifyInstance, trackList) {
       analysisObject[feature].stdev = stats.sampleStandardDeviation(valuesArray);
     });
     return analysisObject;
-  } catch (err) {
-    console.log(err);
-    return err;
+  } catch (error) {
+    console.log(error);
+    return error;
   }
 }
 
@@ -125,9 +127,9 @@ async function calculateTopKGenres(spotifyInstance, topArtists, k) {
       return freqObj2[Object.keys(freqObj2)[0]] - freqObj1[Object.keys(freqObj1)[0]];
     });
     return genreToFreqArr.slice(0, k).map(freqObj => Object.keys(freqObj)[0]);
-  } catch (err) {
-    console.log(err);
-    return err;
+  } catch (error) {
+    console.log(error);
+    return error;
   }
 }
 
@@ -150,8 +152,8 @@ async function getTargetRecommendations(spotifyInstance, featureAnalysisObject, 
 
   try {
     return (await spotifyInstance.getRecommendations(searchParams));
-  } catch (err) {
-    return err;
+  } catch (error) {
+    return error;
   }
 }
 

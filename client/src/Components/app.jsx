@@ -22,7 +22,7 @@ class App extends Component {
       timeRange: 'long_term',
       topTracks: [],
       topArtists: [],
-      topKGenres: [],
+      topGenres: [],
       featureAnalysis: {},
       searchParams: {},
     };
@@ -34,20 +34,23 @@ class App extends Component {
   // fetch user's spotify data from backend server.
   async fetchSpotifyData() {
     try {
-      // TODO: try destructuring
-      const spotifyData = await axios.get('/api/user/spotify_data', {
+      // object destructuring
+      const {
+        data: {
+          topTracks, topArtists, topGenres, featureAnalysis,
+        },
+      } = await axios.get('/api/user/spotify_data', {
         params: {
           access_token: this.state.accessToken,
           time_range: this.state.timeRange,
         },
       });
-      console.log('spotifyData: ', spotifyData);
 
       this.setState({
-        topTracks: [...spotifyData.data.topTracks],
-        topArtists: [...spotifyData.data.topArtists],
-        topGenres: [...spotifyData.data.topKGenres],
-        featureAnalysis: spotifyData.data.featureAnalysis,
+        topTracks: [...topTracks],
+        topArtists: [...topArtists],
+        topGenres: [...topGenres],
+        featureAnalysis,
       }, () => {
         console.log('updated state');
         console.log('this.state: ', this.state);

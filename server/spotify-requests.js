@@ -28,8 +28,15 @@ module.exports = class SpotifyRequests {
         },
       });
       return response.data.items;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      console.log('error with topTracks');
+      if (error.response) {
+        console.log('request made and server responded with response code.', error.response);
+      } else if (error.request) {
+        console.log('no response received');
+      } else {
+        console.log('Error: ', error.message);
+      }
     }
   }
 
@@ -46,8 +53,15 @@ module.exports = class SpotifyRequests {
         },
       });
       return response.data.items;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      console.log('error in artists');
+      if (error.response) {
+        console.log('request made and server responded with response code.', error.response);
+      } else if (error.request) {
+        console.log('no response received');
+      } else {
+        console.log('Error: ', error.message);
+      }
     }
   }
 
@@ -63,8 +77,15 @@ module.exports = class SpotifyRequests {
         },
       });
       return response.data.audio_features;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      console.log('error in features');
+      if (error.response) {
+        console.log('request made and server responded with response code.', error.response);
+      } else if (error.request) {
+        console.log('no response received');
+      } else {
+        console.log('Error: ', error.message);
+      }
     }
   }
 
@@ -73,9 +94,15 @@ module.exports = class SpotifyRequests {
       const response = await this.instance.get('recommendations/available-genre-seeds');
       // console.log(response.data);
       return response.data.genres;
-    } catch (err) {
-      console.log('error');
-      return err;
+    } catch (error) {
+      console.log('error in genres');
+      if (error.response) {
+        console.log('request made and server responded with response code.', error.response);
+      } else if (error.request) {
+        console.log('no response received');
+      } else {
+        console.log('Error: ', error.message);
+      }
     }
   }
 
@@ -89,7 +116,7 @@ module.exports = class SpotifyRequests {
         params: searchParams,
       });
       return response.data;
-    } catch (err) {
+    } catch (error) {
       return err;
     }
   }

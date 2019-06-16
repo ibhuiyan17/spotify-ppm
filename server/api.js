@@ -29,22 +29,18 @@ app.get('/api/user/spotify_data', async (req, res) => {
 
   // TODO: initialize spotify instance
   try {
-    /*
-      initRequests[0] contains array of filtered topTracks
-      initRequests[1] contains array of filtered topArtists
-    */
-    const initRequests = await Promise.all([
+    const [topTracks, topArtists] = await Promise.all([
       utils.getFilteredTopTracks(spotify, req.query.time_range),
       utils.getFilteredTopArtists(spotify, req.query.time_range),
     ]);
-    // console.log('initRequests[0]: ', initRequests[0]);
-    const featureAnalysis = await utils.calculateFeatureAnalysis(spotify, initRequests[0]);
-    const topGenres = await utils.calculateTopKGenres(spotify, initRequests[1], req.query.num_genres);
+    const featureAnalysis = await utils.calculateFeatureAnalysis(spotify, topTracks);
+    const topGenres = await utils.calculateTopKGenres(spotify, topArtists, req.query.num_genres);
 
-    returnObject.topTracks = [...initRequests[0]];
-    returnObject.topArtists = [...initRequests[1]];
+    returnObject.topTracks = [...topTracks];
+    returnObject.topArtists = [...topArtists];
     returnObject.featureAnalysis = featureAnalysis;
-    returnObject.topKGenres = [...topGenres];
+    returnObject.topGenres = [...topGenres];
+    console.log('return object: ', returnObject);
 
     res.send(returnObject);
   } catch (err) {
