@@ -7,9 +7,12 @@ import {
   Route,
 } from 'react-router-dom';
 import axios from 'axios';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
-import StartButton from './StartButton';
 import Tokens from './Tokens';
+import TitleBar from './TitleBar';
+import TopTracks from './TopTracks/TopTracks';
+import StartButton from './StartButton';
 
 
 class App extends Component {
@@ -24,11 +27,14 @@ class App extends Component {
       topArtists: [],
       topGenres: [],
       featureAnalysis: {},
-      searchParams: {},
+      searchParams: {
+        seeds: [],
+      }, // seeds -> list of seeds, targets
     };
 
     this.handleTokenUpdate = this.handleTokenUpdate.bind(this);
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
+    this.handleSeedSelect = this.handleSeedSelect.bind(this);
   }
 
   // fetch user's spotify data from backend server.
@@ -73,16 +79,48 @@ class App extends Component {
     });
   }
 
+  /* Parent handler to update search params object
+    inputs: action (add/remove), seed object, type of seed (if add)
+    output: updated search params object
+  */
+  handleSeedSelect(action, seedObj, type) {
+    switch (action) {
+      case 'add': {
+        const searchParams = { ...this.state.searchParams };
+        searchParams.seeds = [...searchParams.seeds, seedObj];
+        this.setState({
+          searchParams,
+        });
+        break;
+      }
+      case 'remove': {
+        this.setState(prevState => ({
+          searchParams: prevState.searchParams.seeds[type].filter(({ id }) => {
+            return id !== seedObj.id;
+          }),
+        }));
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
   render() {
     return (
       <Fragment>
+        <CssBaseline />
         <Router>
           <Route
             path='/'
             render={props => <Tokens {...props} handler={this.handleTokenUpdate} />}
           />
         </Router>
-        <h1>Spotify: Personalized Playlist Builder</h1>
+        <TitleBar />
+        <TopTracks
+          trackList={this.state.topTracks}
+          seedHandler={this.handleSeedSelect}
+        />
         <StartButton targ={'/api/recents'}/>
       </Fragment>
     );

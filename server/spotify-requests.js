@@ -33,7 +33,7 @@ module.exports = class SpotifyRequests {
       if (error.response) {
         console.log('request made and server responded with response code.', error.response);
       } else if (error.request) {
-        console.log('no response received');
+        console.log('no response received', error.request);
       } else {
         console.log('Error: ', error.message);
       }
