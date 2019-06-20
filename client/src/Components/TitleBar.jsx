@@ -9,7 +9,7 @@ const styles = {
   },
 };
 
-function TitleBar(props) {
+function TitleBar() {
   return (
     <AppBar position="sticky">
     <Toolbar>

@@ -11,7 +11,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Tokens from './Tokens';
 import TitleBar from './TitleBar';
-import TopTracks from './TopTracks/TopTracks';
+import { TopTracks, TopArtists, TopGenres } from './UserTop';
 import StartButton from './StartButton';
 
 
@@ -85,12 +85,11 @@ class App extends Component {
   */
   handleSeedSelect(action, seedObj) {
     const searchParams = { ...this.state.searchParams };
-    console.log(searchParams);
     let success = true; // signals failed action
+
     switch (action) {
       case 'add': {
         if (searchParams.seeds.length < 5) {
-          console.log('what up bitch')
           searchParams.seeds = [...searchParams.seeds, seedObj];
         } else {
           success = false;
@@ -125,6 +124,16 @@ class App extends Component {
         <TitleBar />
         <TopTracks
           trackList={this.state.topTracks}
+          seedHandler={this.handleSeedSelect}
+        />
+        <p>SPLIT</p>
+        <TopArtists
+          artistList={this.state.topArtists}
+          seedHandler={this.handleSeedSelect}
+        />
+        <p>SPLIT</p>
+        <TopGenres 
+          genreList={this.state.topGenres}
           seedHandler={this.handleSeedSelect}
         />
         <StartButton targ={'/api/recents'}/>
