@@ -80,30 +80,36 @@ class App extends Component {
   }
 
   /* Parent handler to update search params object
-    inputs: action (add/remove), seed object, type of seed (if add)
+    inputs: action (add/remove), seed object
     output: updated search params object
   */
-  handleSeedSelect(action, seedObj, type) {
+  handleSeedSelect(action, seedObj) {
+    const searchParams = { ...this.state.searchParams };
+    console.log(searchParams);
+    let success = true; // signals failed action
     switch (action) {
       case 'add': {
-        const searchParams = { ...this.state.searchParams };
-        searchParams.seeds = [...searchParams.seeds, seedObj];
-        this.setState({
-          searchParams,
-        });
+        if (searchParams.seeds.length < 5) {
+          console.log('what up bitch')
+          searchParams.seeds = [...searchParams.seeds, seedObj];
+        } else {
+          success = false;
+        }
         break;
       }
       case 'remove': {
-        this.setState(prevState => ({
-          searchParams: prevState.searchParams.seeds[type].filter(({ id }) => {
-            return id !== seedObj.id;
-          }),
-        }));
+        searchParams.seeds = searchParams.seeds.filter(({ type, id }) => {
+          return (type === seedObj.type) // remove if object matches
+            ? id !== seedObj.id
+            : true;
+        });
         break;
       }
       default:
         break;
     }
+    this.setState({ searchParams });
+    return success;
   }
 
   render() {
