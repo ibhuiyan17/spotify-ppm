@@ -24,8 +24,7 @@ const NUM_TOTAL_SEEDS = 5; // max number of seeds suppoprted by spotify api
 app.get('/api/user/spotify_data', async (req, res) => {
   const returnObject = {};
 
-  const token = req.query.access_token;
-  const spotify = new SpotifyRequests(token);
+  const spotify = new SpotifyRequests(req.query.access_token);
 
   // TODO: initialize spotify instance
   try {
@@ -40,7 +39,6 @@ app.get('/api/user/spotify_data', async (req, res) => {
     returnObject.topArtists = [...topArtists];
     returnObject.featureAnalysis = featureAnalysis;
     returnObject.topGenres = [...topGenres];
-    console.log('return object: ', returnObject);
 
     res.send(returnObject);
   } catch (err) {
@@ -52,33 +50,14 @@ app.get('/api/user/spotify_data', async (req, res) => {
 
 // GET recommendations
 app.get('/api/recommendations', async (req, res) => {
-  const returnObject = {};
-  returnObject.parameters = {};
+  const returnObject = {
+    recommendations: [],
+  };
+  const spotify = new SpotifyRequests(req.query.access_token);
+
   try {
-    /*
-      initRequests[0] contains array of filtered topTracks
-      initRequests[1] contains array of filtered topArtists
-      initRequests[2] contains Spotify's available genre seeds
-    */
-    const initRequests = await Promise.all([
-      utils.getFilteredTopTracks(spotify, req.query.time_range),
-      utils.getFilteredTopArtists(spotify, req.query.time_range),
-    ]);
-    const featureAnalysis = await utils.calculateFeatureAnalysis(spotify, initRequests[0]);
-    const topGenres = await utils.calculateTopKGenres(spotify, initRequests[1], req.query.num_genres);
-
-    const numArtistSeeds = NUM_TOTAL_SEEDS - topGenres.length; // accounts for less genres available than requested
-    returnObject.recommendations = await utils.getTargetRecommendations(
-      spotify,
-      featureAnalysis,
-      topGenres,
-      initRequests[1].slice(0, numArtistSeeds).map(artistObj => artistObj.artistID),
-    );
-
-    returnObject.parameters.topTracks = [...initRequests[0]];
-    returnObject.parameters.topArtists = [...initRequests[1]];
-    returnObject.parameters.featureAnalysis = featureAnalysis;
-    returnObject.parameters.topKGenres = [...topGenres];
+    // returnObject.recommendations = await utils.getTargetRecommendations();
+    returnObject.recommendations = await utils.getTargetRecommendations(spotify, req.query);
 
     res.send(returnObject);
   } catch (err) {

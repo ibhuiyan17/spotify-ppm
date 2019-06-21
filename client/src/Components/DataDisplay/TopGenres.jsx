@@ -1,10 +1,10 @@
-// Top genres list component. Passes down genre info to the SeedItem Component.
+// Top genres list component. Passes down genre info to the DisplayItem Component.
 
 /* eslint-disable implicit-arrow-linebreak */
 import React, { Fragment } from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import SeedItem from '../SeedItem';
+import DisplayItem from './DisplayItem';
 
 const styles = theme => ({
   trackItem: {
@@ -19,7 +19,7 @@ function TopGenres({ genreList, seedHandler }) {
     <Fragment>
       <List className="artist-list">
         {genreList.map(genre =>
-          <SeedItem
+          <DisplayItem key={genre}
             type="genre"
             id={genre}
             primaryText={genre}

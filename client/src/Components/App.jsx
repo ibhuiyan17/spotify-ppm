@@ -11,7 +11,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Tokens from './Tokens';
 import TitleBar from './TitleBar';
-import { TopTracks, TopArtists, TopGenres } from './UserTop';
+import { TopTracks, TopArtists, TopGenres, Results } from './DataDisplay';
 import StartButton from './StartButton';
 
 
@@ -22,18 +22,20 @@ class App extends Component {
       accessToken: '',
       refreshToken: '',
       userInfo: {},
-      timeRange: 'long_term',
+      timeRange: 'medium_term',
       topTracks: [],
       topArtists: [],
       topGenres: [],
       featureAnalysis: {},
-      searchParams: {
+      searchParams: { // seeds -> list of seeds, targets
         seeds: [],
-      }, // seeds -> list of seeds, targets
+      },
+      results: [],
     };
 
     this.handleTokenUpdate = this.handleTokenUpdate.bind(this);
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
+    this.fetchResults = this.fetchResults.bind(this);
     this.handleSeedSelect = this.handleSeedSelect.bind(this);
   }
 
@@ -66,7 +68,42 @@ class App extends Component {
     }
   }
 
-  // update access and refresh tokens
+  // fetch results based on selected seeds from backend server.
+  async fetchResults() {
+    const params = { // holds request data for backend
+      access_token: this.state.accessToken,
+    };
+
+    // load seeds and convert them to strings
+    this.state.searchParams.seeds.forEach(({ type, id }) => {
+      const seedType = `seed_${type}s`;
+      if (!(seedType in params)) {
+        params[seedType] = [];
+      }
+      params[seedType].push(id);
+    });
+    /*
+    Object.keys(params).forEach((seedType) => {
+      params[seedType] = params[seedType].toString();
+    }); */
+
+    console.log(params);
+    const {
+      data: {
+        recommendations,
+      },
+    } = await axios.get('api/recommendations', {
+      params,
+    });
+
+    this.setState({
+      results: recommendations,
+    });
+
+    console.log('results: ', recommendations);
+  }
+
+  // update access and refresh tokens.
   handleTokenUpdate(accessToken, refreshToken) {
     // TODO: Do these tokens get updated after first set?
     this.setState({
@@ -79,9 +116,10 @@ class App extends Component {
     });
   }
 
-  /* Parent handler to update search params object
+  /* Parent handler to update search params object.
     inputs: action (add/remove), seed object
-    output: updated search params object
+    output: updated state of search params object and bool for successful
+          add or remove
   */
   handleSeedSelect(action, seedObj) {
     const searchParams = { ...this.state.searchParams };
@@ -132,11 +170,17 @@ class App extends Component {
           seedHandler={this.handleSeedSelect}
         />
         <p>SPLIT</p>
-        <TopGenres 
+        <TopGenres
           genreList={this.state.topGenres}
           seedHandler={this.handleSeedSelect}
         />
-        <StartButton targ={'/api/recents'}/>
+        <p>SPLIT</p>
+        <Results
+          trackList={this.state.results}
+        />
+        <StartButton
+          triggerFetch={this.fetchResults}
+        />
       </Fragment>
     );
   }

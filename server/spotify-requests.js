@@ -111,10 +111,12 @@ module.exports = class SpotifyRequests {
     output:
   */
   async getRecommendations(searchParams) {
+    // console.log('from spotify recommendations: ', searchParams);
     try {
       const response = await this.instance.get('recommendations', {
         params: searchParams,
       });
+      // console.log(response.data);
       return response.data;
     } catch (error) {
       return err;

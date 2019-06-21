@@ -4,9 +4,9 @@ import React, { Component } from 'react';
 import {
   ListItem, ListItemText,
 } from '@material-ui/core';
-import Image from './Image';
+import Image from '../Image';
 
-class SeedItem extends Component {
+class DisplayItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,7 +42,7 @@ class SeedItem extends Component {
     } = this.props;
 
     return (
-      <ListItem key={id}
+      <ListItem
         alignItems="flex-start"
         divider={true}
         button={true}
@@ -64,4 +64,4 @@ class SeedItem extends Component {
   }
 }
 
-export default SeedItem;
+export default DisplayItem;

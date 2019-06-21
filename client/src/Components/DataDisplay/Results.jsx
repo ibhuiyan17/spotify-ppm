@@ -1,10 +1,10 @@
-// Top tracks list component. Passes down track info to the SeedItem Component.
+// Resulsts list component.
 
 /* eslint-disable implicit-arrow-linebreak */
 import React, { Fragment } from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import SeedItem from '../SeedItem';
+import DisplayItem from './DisplayItem';
 
 const styles = theme => ({
   trackItem: {
@@ -12,7 +12,7 @@ const styles = theme => ({
   },
 });
 
-function TopTracks({ trackList, seedHandler }) {
+function Results({ trackList }) {
   // const { classes } = this.props;
 
   return (
@@ -21,17 +21,17 @@ function TopTracks({ trackList, seedHandler }) {
         {trackList.map(({ // destructure track object
           trackID, name, artists, images,
         }) =>
-          <SeedItem
-            type="track"
+          <DisplayItem key={trackID}
+            type="result"
             id={trackID}
             primaryText={name}
             secondaryText={artists.join(', ')}
             image={images[0]}
-            seedHandler={seedHandler}
+            // seedHandler={seedHandler}
           />)}
       </List>
     </Fragment>
   );
 }
 
-export default withStyles(styles)(TopTracks);
+export default withStyles(styles)(Results);

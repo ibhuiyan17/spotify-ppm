@@ -12,6 +12,27 @@ const styles = theme => ({
   },
 });
 
+
+function StartButton(props) {
+  function handleClick(e) {
+    e.preventDefault();
+    console.log('Clicked start button');
+
+    props.triggerFetch();
+  }
+  
+  return (
+    <Button
+      variant="contained"
+      className="start-button"
+      color="primary"
+      onClick={handleClick}
+    >
+      Start
+    </Button>
+  );
+}
+/*
 class StartButton extends Component {
   // Send request to server to initiate algorithm.
 
@@ -22,7 +43,6 @@ class StartButton extends Component {
     };
 
     this.handleClick = this.handleClick.bind(this);
-    this.callBackendAPI = this.callBackendAPI.bind(this);
   }
 
   handleClick(e) {
@@ -36,26 +56,19 @@ class StartButton extends Component {
     this.callBackendAPI();
   }
 
-  callBackendAPI() {
-    fetch(this.props.targ)
-      .then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch(error => console.log(error));
-  }
-
   render() {
     return (
-      <Button variant="contained" className="start-button" onClick={this.handleClick}>
+      <Button
+        variant="contained"
+        className="start-button"
+        color="primary"
+        onClick={this.handleClick}
+      >
         Start
       </Button>
     );
   }
-}
+} */
 
 /*
 StartButton.PropTypes = {

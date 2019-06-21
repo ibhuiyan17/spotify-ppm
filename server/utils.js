@@ -115,7 +115,6 @@ async function calculateTopKGenres(spotifyInstance, topArtists, k) {
         }
       });
     });
-    console.log(genreToFreqMap);
 
     // add available genres to array and sort by freq
     Object.keys(genreToFreqMap).forEach((genre) => {
@@ -134,24 +133,38 @@ async function calculateTopKGenres(spotifyInstance, topArtists, k) {
 }
 
 /*
-  input: spotify request object, feature analysis object,
-          array of genres, and array of artist IDs to seed recommendations
+  input: spotify request object, request object from frontend
   output: array of track object that fit query
 */
-async function getTargetRecommendations(spotifyInstance, featureAnalysisObject, genresArray, artistsArray) {
+async function getTargetRecommendations(spotifyInstance, requestObj) {
   const searchParams = {};
-  searchParams.seed_genres = genresArray.toString();
-  searchParams.seed_artists = artistsArray.toString();
 
+  Object.keys(requestObj).forEach((param) => {
+    if (Array.isArray(requestObj[param])) { // convert all array params to strings
+      searchParams[param] = requestObj[param].toString();
+    } else { // TODO: logic for features
+
+    }
+  });
+
+  console.log('from utils, searchParams: ', searchParams);
+
+  /*
   Object.keys(featureAnalysisObject).forEach((feature) => {
     searchParams[`target_${feature}`] = featureAnalysisObject[feature].median;
-  });
-  searchParams.target_danceability = 1;
-  searchParams.target_energy = 1;
-  console.log(searchParams);
+  }); */
 
   try {
-    return (await spotifyInstance.getRecommendations(searchParams));
+    // console.log('yeet: ', (await spotifyInstance.getRecommendations(searchParams)).tracks);
+    // return (await spotifyInstance.getRecommendations(searchParams));
+
+    return ((await spotifyInstance.getRecommendations(searchParams)).tracks).map(trackObj => ({
+      trackID: trackObj.id,
+      name: trackObj.name,
+      artists: trackObj.artists.map(artistObj => artistObj.name),
+      preview_url: trackObj.preview_url,
+      images: trackObj.album.images,
+    }));
   } catch (error) {
     return error;
   }
