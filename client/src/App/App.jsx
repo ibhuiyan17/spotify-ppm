@@ -7,18 +7,30 @@ import {
   Route,
 } from 'react-router-dom';
 import axios from 'axios';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { CssBaseline, Grid, Paper, Typography } from '@material-ui/core';
 
 import Tokens from './Tokens';
+import View from './View';
 import TitleBar from './TitleBar';
 import { TopTracks, TopArtists, TopGenres, Results } from './DataDisplay';
 import StartButton from './StartButton';
 
+const styles = {
+  Paper: {
+    padding: 0,
+    marginTop: 5,
+    marginBottom: 2,
+    marginLeft: 5,
+    maxHeight: 400,
+    overflowY: 'scroll', // makes it scrollable
+  },
+};
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      defaultView: true, // determines layout based on screen
       accessToken: '',
       refreshToken: '',
       userInfo: {},
@@ -37,6 +49,7 @@ class App extends Component {
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
     this.handleSeedSelect = this.handleSeedSelect.bind(this);
+    this.updateViewMode = this.updateViewMode.bind(this);
   }
 
   // fetch user's spotify data from backend server.
@@ -149,6 +162,14 @@ class App extends Component {
     return success;
   }
 
+  // update between dekstop and mobile views based on screen size
+  updateViewMode(width, height) {
+    const defaultView = width > height;
+    console.log(width, height);
+    console.log('default view: ', defaultView);
+    this.setState({ defaultView });
+  }
+
   render() {
     return (
       <Fragment>
@@ -159,28 +180,68 @@ class App extends Component {
             render={props => <Tokens {...props} handler={this.handleTokenUpdate} />}
           />
         </Router>
+        <View handler={this.updateViewMode} />
         <TitleBar />
-        <TopTracks
-          trackList={this.state.topTracks}
-          seedHandler={this.handleSeedSelect}
-        />
-        <p>SPLIT</p>
-        <TopArtists
-          artistList={this.state.topArtists}
-          seedHandler={this.handleSeedSelect}
-        />
-        <p>SPLIT</p>
-        <TopGenres
-          genreList={this.state.topGenres}
-          seedHandler={this.handleSeedSelect}
-        />
-        <p>SPLIT</p>
-        <Results
-          trackList={this.state.results}
-        />
-        <StartButton
-          triggerFetch={this.fetchResults}
-        />
+        {this.state.defaultView
+          && <Fragment>
+            <Grid container spacing={1}>
+              <Grid item xs>
+                <Typography
+                  variant="h6"
+                  style={{ marginLeft: 5, marginTop: 5 }}
+                >
+                  Your Top Tracks
+                </Typography>
+                <Paper style={styles.Paper} >
+                  <TopTracks
+                    trackList={this.state.topTracks}
+                    seedHandler={this.handleSeedSelect}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs>
+                <Typography
+                  variant="h6"
+                  style={{ marginLeft: 5, marginTop: 5 }}
+                >
+                  Your Top Artists
+                </Typography>
+                <Paper style={styles.Paper}>
+                  <TopArtists
+                    artistList={this.state.topArtists}
+                    seedHandler={this.handleSeedSelect}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs>
+                <Typography
+                  variant="h6"
+                  style={{ marginLeft: 5, marginTop: 5 }}
+                >
+                  Your Top Genres
+                </Typography>
+                <Paper style={styles.Paper}>
+                  <TopGenres
+                    genreList={this.state.topGenres}
+                    seedHandler={this.handleSeedSelect}
+                  />
+                </Paper>
+              </Grid>
+            </Grid>
+            <Typography
+              variant="h3"
+              style={{ marginTop: 20 }}
+            >
+              Results
+            </Typography>
+            <Results
+              trackList={this.state.results}
+            />
+            <StartButton
+                triggerFetch={this.fetchResults}
+            />
+          </Fragment>
+        }
       </Fragment>
     );
   }
