@@ -11,7 +11,7 @@ const styles = {
 
 function TitleBar() {
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" style={{maxHeight: 70}}>
     <Toolbar>
       <Typography variant="h6" style={styles.title}>
         Spotify: Personalized Playlist Builder

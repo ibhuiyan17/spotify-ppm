@@ -22,6 +22,7 @@ class View extends Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
+  // update window state, throttled by 300ms for better performance
   updateWindowDimensions = throttle(300, () => {
     this.setState({
       width: window.innerWidth,

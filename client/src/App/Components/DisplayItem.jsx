@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import {
   ListItem, ListItemText,
 } from '@material-ui/core';
-import Image from '../Image';
+import Image from './Image';
 
 class DisplayItem extends Component {
   constructor(props) {
@@ -55,6 +55,7 @@ class DisplayItem extends Component {
             imageType={type === 'track' ? 'trackart' : 'artist'}
           />
         }
+        <br/><br/>
         <ListItemText
           primary={primaryText}
           secondary={secondaryText}

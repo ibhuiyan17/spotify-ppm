@@ -7,24 +7,13 @@ import {
   Route,
 } from 'react-router-dom';
 import axios from 'axios';
-import { CssBaseline, Grid, Paper, Typography } from '@material-ui/core';
+import { CssBaseline, Grid } from '@material-ui/core';
 
-import Tokens from './Tokens';
-import View from './View';
-import TitleBar from './TitleBar';
-import { TopTracks, TopArtists, TopGenres, Results } from './DataDisplay';
-import StartButton from './StartButton';
+import pick from 'lodash.pick';
+import { Tokens, View } from './Components/StateProvider';
+import { TitleBar } from './Components';
+import { DesktopView, MobileView } from './Views';
 
-const styles = {
-  Paper: {
-    padding: 0,
-    marginTop: 5,
-    marginBottom: 2,
-    marginLeft: 5,
-    maxHeight: 400,
-    overflowY: 'scroll', // makes it scrollable
-  },
-};
 
 class App extends Component {
   constructor(props) {
@@ -39,10 +28,10 @@ class App extends Component {
       topArtists: [],
       topGenres: [],
       featureAnalysis: {},
-      searchParams: { // seeds -> list of seeds, targets
-        seeds: [],
-      },
       results: [],
+    };
+    this.searchParams = { // seeds -> list of seeds, targets
+      seeds: [],
     };
 
     this.handleTokenUpdate = this.handleTokenUpdate.bind(this);
@@ -88,7 +77,7 @@ class App extends Component {
     };
 
     // load seeds and convert them to strings
-    this.state.searchParams.seeds.forEach(({ type, id }) => {
+    this.searchParams.seeds.forEach(({ type, id }) => {
       const seedType = `seed_${type}s`;
       if (!(seedType in params)) {
         params[seedType] = [];
@@ -135,20 +124,20 @@ class App extends Component {
           add or remove
   */
   handleSeedSelect(action, seedObj) {
-    const searchParams = { ...this.state.searchParams };
+    // const searchParams = { ...this.searchParams };
     let success = true; // signals failed action
 
-    switch (action) {
+    switch (action) { // TODO: use array push
       case 'add': {
-        if (searchParams.seeds.length < 5) {
-          searchParams.seeds = [...searchParams.seeds, seedObj];
+        if (this.searchParams.seeds.length < 5) {
+          this.searchParams.seeds = [...this.searchParams.seeds, seedObj];
         } else {
           success = false;
         }
         break;
       }
       case 'remove': {
-        searchParams.seeds = searchParams.seeds.filter(({ type, id }) => {
+        this.searchParams.seeds = this.searchParams.seeds.filter(({ type, id }) => {
           return (type === seedObj.type) // remove if object matches
             ? id !== seedObj.id
             : true;
@@ -158,19 +147,26 @@ class App extends Component {
       default:
         break;
     }
-    this.setState({ searchParams });
+    console.log(this.searchParams);
+    // this.setState({ searchParams });
     return success;
   }
 
   // update between dekstop and mobile views based on screen size
   updateViewMode(width, height) {
-    const defaultView = width > height;
+    const updatedDefaultView = width > height;
     console.log(width, height);
-    console.log('default view: ', defaultView);
-    this.setState({ defaultView });
+    console.log('default view: ', updatedDefaultView);
+    if (updatedDefaultView !== this.state.defaultView) { // only update if it changed
+      this.setState({ defaultView: updatedDefaultView });
+    }
   }
 
   render() {
+    const viewProps = pick(this.state, [ // lodash func. for filtering object
+      'topTracks', 'topArtists', 'topGenres', 'results',
+    ]);
+    console.log('props: ', viewProps);
     return (
       <Fragment>
         <CssBaseline />
@@ -181,67 +177,25 @@ class App extends Component {
           />
         </Router>
         <View handler={this.updateViewMode} />
-        <TitleBar />
-        {this.state.defaultView
-          && <Fragment>
-            <Grid container spacing={1}>
-              <Grid item xs>
-                <Typography
-                  variant="h6"
-                  style={{ marginLeft: 5, marginTop: 5 }}
-                >
-                  Your Top Tracks
-                </Typography>
-                <Paper style={styles.Paper} >
-                  <TopTracks
-                    trackList={this.state.topTracks}
-                    seedHandler={this.handleSeedSelect}
-                  />
-                </Paper>
-              </Grid>
-              <Grid item xs>
-                <Typography
-                  variant="h6"
-                  style={{ marginLeft: 5, marginTop: 5 }}
-                >
-                  Your Top Artists
-                </Typography>
-                <Paper style={styles.Paper}>
-                  <TopArtists
-                    artistList={this.state.topArtists}
-                    seedHandler={this.handleSeedSelect}
-                  />
-                </Paper>
-              </Grid>
-              <Grid item xs>
-                <Typography
-                  variant="h6"
-                  style={{ marginLeft: 5, marginTop: 5 }}
-                >
-                  Your Top Genres
-                </Typography>
-                <Paper style={styles.Paper}>
-                  <TopGenres
-                    genreList={this.state.topGenres}
-                    seedHandler={this.handleSeedSelect}
-                  />
-                </Paper>
-              </Grid>
-            </Grid>
-            <Typography
-              variant="h3"
-              style={{ marginTop: 20 }}
-            >
-              Results
-            </Typography>
-            <Results
-              trackList={this.state.results}
-            />
-            <StartButton
-                triggerFetch={this.fetchResults}
-            />
-          </Fragment>
-        }
+        <Grid>
+          <Grid item xl>
+            <TitleBar />
+          </Grid>
+          <Grid item xl>
+            {this.state.defaultView
+              ? <DesktopView
+                  { ...viewProps }
+                  handleSeedSelect={this.handleSeedSelect}
+                  fetchResults={this.fetchResults}
+                />
+              : <MobileView
+                  { ...viewProps }
+                  handleSeedSelect={this.handleSeedSelect}
+                  fetchResults={this.fetchResults}
+                />
+            }
+          </Grid>
+        </Grid>
       </Fragment>
     );
   }
