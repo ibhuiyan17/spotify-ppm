@@ -12,28 +12,24 @@ const styles = theme => ({
 });
 
 
-function StartButton({ triggerFetch, compactViewHandler }) {
+function ResetButton(props) {
   function handleClick(e) {
     e.preventDefault();
-    console.log('Clicked start button');
+    console.log('Clicked reset button');
 
-    triggerFetch();
-
-    if (compactViewHandler) { // runs specific handler for compact view
-      compactViewHandler();
-    }
+    props.triggerReset();
   }
 
   return (
     <Button
       variant="contained"
-      className="start-button"
+      className="reset-button"
       color="primary"
       onClick={handleClick}
     >
-      Start
+      Reset
     </Button>
   );
 }
 
-export default withStyles(styles)(StartButton);
+export default withStyles(styles)(ResetButton);

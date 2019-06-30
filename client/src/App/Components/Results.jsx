@@ -1,7 +1,7 @@
 // Resulsts list component.
 
 /* eslint-disable implicit-arrow-linebreak */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import DisplayItem from './DisplayItem';
@@ -16,7 +16,7 @@ function Results({ trackList }) {
   // const { classes } = this.props;
 
   return (
-    <Fragment>
+    <>
       <List className="track-list">
         {trackList.map(({ // destructure track object
           trackID, name, artists, images,
@@ -30,7 +30,7 @@ function Results({ trackList }) {
             // seedHandler={seedHandler}
           />)}
       </List>
-    </Fragment>
+    </>
   );
 }
 

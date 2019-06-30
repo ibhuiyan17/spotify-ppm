@@ -1,7 +1,7 @@
 /* Top level component for the app. */
 
 /* eslint-disable import/no-unresolved */
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -12,7 +12,7 @@ import { CssBaseline, Grid } from '@material-ui/core';
 import pick from 'lodash.pick';
 import { Tokens, View } from './Components/StateProvider';
 import { TitleBar } from './Components';
-import { DesktopView, MobileView } from './Views';
+import { StandardView, CompactView } from './Views';
 
 
 class App extends Component {
@@ -23,11 +23,12 @@ class App extends Component {
       accessToken: '',
       refreshToken: '',
       userInfo: {},
-      timeRange: 'medium_term',
+      timeRange: 'long_term',
       topTracks: [],
       topArtists: [],
       topGenres: [],
       featureAnalysis: {},
+      numSelected: 0,
       results: [],
     };
     this.searchParams = { // seeds -> list of seeds, targets
@@ -38,7 +39,21 @@ class App extends Component {
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
     this.handleSeedSelect = this.handleSeedSelect.bind(this);
+    this.resetSeeds = this.resetSeeds.bind(this);
     this.updateViewMode = this.updateViewMode.bind(this);
+  }
+
+  // update access and refresh tokens.
+  handleTokenUpdate(accessToken, refreshToken) {
+    // TODO: Do these tokens get updated after first set?
+    this.setState({
+      accessToken,
+      refreshToken,
+    }, () => {
+      console.log('access token updated: ', this.state.accessToken);
+      console.log('refresh token updated: ', this.state.refreshToken);
+      this.fetchSpotifyData();
+    });
   }
 
   // fetch user's spotify data from backend server.
@@ -61,9 +76,6 @@ class App extends Component {
         topArtists: [...topArtists],
         topGenres: [...topGenres],
         featureAnalysis,
-      }, () => {
-        console.log('updated state');
-        console.log('this.state: ', this.state);
       });
     } catch (err) {
       console.log(err); // TODO: change these
@@ -89,33 +101,21 @@ class App extends Component {
       params[seedType] = params[seedType].toString();
     }); */
 
-    console.log(params);
-    const {
-      data: {
-        recommendations,
-      },
-    } = await axios.get('api/recommendations', {
-      params,
-    });
-
-    this.setState({
-      results: recommendations,
-    });
-
-    console.log('results: ', recommendations);
-  }
-
-  // update access and refresh tokens.
-  handleTokenUpdate(accessToken, refreshToken) {
-    // TODO: Do these tokens get updated after first set?
-    this.setState({
-      accessToken,
-      refreshToken,
-    }, () => {
-      console.log('access token updated: ', this.state.accessToken);
-      console.log('refresh token updated: ', this.state.refreshToken);
-      this.fetchSpotifyData();
-    });
+    try {
+      const {
+        data: {
+          recommendations,
+        },
+      } = await axios.get('api/recommendations', {
+        params,
+      });
+  
+      this.setState({
+        results: recommendations,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   /* Parent handler to update search params object.
@@ -131,6 +131,9 @@ class App extends Component {
       case 'add': {
         if (this.searchParams.seeds.length < 5) {
           this.searchParams.seeds = [...this.searchParams.seeds, seedObj];
+          this.setState(prevState => ({
+            numSelected: prevState.numSelected + 1,
+          }));
         } else {
           success = false;
         }
@@ -142,6 +145,9 @@ class App extends Component {
             ? id !== seedObj.id
             : true;
         });
+        this.setState(prevState => ({
+          numSelected: prevState.numSelected - 1,
+        }));
         break;
       }
       default:
@@ -150,6 +156,14 @@ class App extends Component {
     console.log(this.searchParams);
     // this.setState({ searchParams });
     return success;
+  }
+
+  // Reset search params object to empty
+  resetSeeds() {
+    this.searchParams.seeds = [];
+    this.setState({
+      numSelected: 0,
+    });
   }
 
   // update between dekstop and mobile views based on screen size
@@ -164,11 +178,11 @@ class App extends Component {
 
   render() {
     const viewProps = pick(this.state, [ // lodash func. for filtering object
-      'topTracks', 'topArtists', 'topGenres', 'results',
+      'topTracks', 'topArtists', 'topGenres', 'results', 'numSelected',
     ]);
     console.log('props: ', viewProps);
     return (
-      <Fragment>
+      <>
         <CssBaseline />
         <Router>
           <Route
@@ -178,25 +192,25 @@ class App extends Component {
         </Router>
         <View handler={this.updateViewMode} />
         <Grid>
-          <Grid item xl>
-            <TitleBar />
-          </Grid>
+          <TitleBar />
           <Grid item xl>
             {this.state.defaultView
-              ? <DesktopView
+              ? <StandardView
                   { ...viewProps }
                   handleSeedSelect={this.handleSeedSelect}
                   fetchResults={this.fetchResults}
+                  resetSelection={this.resetSeeds}
                 />
-              : <MobileView
+              : <CompactView
                   { ...viewProps }
                   handleSeedSelect={this.handleSeedSelect}
                   fetchResults={this.fetchResults}
+                  resetSelection={this.resetSeeds}
                 />
             }
           </Grid>
         </Grid>
-      </Fragment>
+      </>
     );
   }
 }

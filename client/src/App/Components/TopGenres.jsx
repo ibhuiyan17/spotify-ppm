@@ -1,7 +1,7 @@
 // Top genres list component. Passes down genre info to the DisplayItem Component.
 
 /* eslint-disable implicit-arrow-linebreak */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import DisplayItem from './DisplayItem';
@@ -16,7 +16,7 @@ function TopGenres({ genreList, seedHandler }) {
   // const { classes } = this.props;
 
   return (
-    <Fragment>
+    <>
       <List className="artist-list">
         {genreList.map(genre =>
           <DisplayItem key={genre}
@@ -26,7 +26,7 @@ function TopGenres({ genreList, seedHandler }) {
             seedHandler={seedHandler}
           />)}
       </List>
-    </Fragment>
+    </>
   );
 }
 

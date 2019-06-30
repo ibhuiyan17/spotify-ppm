@@ -1,7 +1,7 @@
 // Top artists list component. Passes down artist info to the DisplayItem Component.
 
 /* eslint-disable implicit-arrow-linebreak */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import DisplayItem from './DisplayItem';
@@ -16,7 +16,7 @@ function TopArtists({ artistList, seedHandler }) {
   // const { classes } = this.props;
 
   return (
-    <Fragment>
+    <>
       <List className="artist-list">
         {artistList.map(({ // destructure artist object
           artistID, name, genres, images,
@@ -30,7 +30,7 @@ function TopArtists({ artistList, seedHandler }) {
             seedHandler={seedHandler}
           />)}
       </List>
-    </Fragment>
+    </>
   );
 }
 

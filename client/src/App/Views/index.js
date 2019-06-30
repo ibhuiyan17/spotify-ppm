@@ -1,4 +1,4 @@
-import DesktopView from './DesktopView';
-import MobileView from './MobileView';
+import StandardView from './StandardView';
+import CompactView from './CompactView';
 
-export { DesktopView, MobileView };
+export { StandardView, CompactView };

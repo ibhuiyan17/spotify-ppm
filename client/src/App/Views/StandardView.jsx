@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
   Grid, Paper, Typography,
 } from '@material-ui/core';
@@ -17,11 +17,11 @@ const styles = {
   },
 };
 
-function DesktopView({
+function StandardView({
   topTracks, topArtists, topGenres, handleSeedSelect, results, fetchResults,
 }) {
   return (
-    <Fragment>
+    <>
       <Grid container spacing={1}>
         <Grid item xs>
           <Typography
@@ -78,8 +78,8 @@ function DesktopView({
       <StartButton
         triggerFetch={fetchResults}
       />
-    </Fragment>
+    </>
   );
 }
 
-export default DesktopView;
+export default StandardView;

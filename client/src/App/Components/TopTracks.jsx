@@ -1,7 +1,7 @@
 // Top tracks list component. Passes down track info to the DisplayItem Component.
 
 /* eslint-disable implicit-arrow-linebreak */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import DisplayItem from './DisplayItem';
@@ -16,7 +16,7 @@ function TopTracks({ trackList, seedHandler }) {
   // const { classes } = this.props;
 
   return (
-    <Fragment>
+    <>
       <List className="track-list">
         {trackList.map(({ // destructure track object
           trackID, name, artists, images,
@@ -30,7 +30,7 @@ function TopTracks({ trackList, seedHandler }) {
             seedHandler={seedHandler}
           />)}
       </List>
-    </Fragment>
+    </>
   );
 }
 
