@@ -11,7 +11,7 @@ import { CssBaseline, Grid } from '@material-ui/core';
 
 import pick from 'lodash.pick';
 import { Tokens, View } from './Components/StateProvider';
-import { TitleBar } from './Components';
+import { TitleBar } from './Components/AppBars';
 import { StandardView, CompactView } from './Views';
 
 
@@ -23,7 +23,7 @@ class App extends Component {
       accessToken: '',
       refreshToken: '',
       userInfo: {},
-      timeRange: 'long_term',
+      timeRange: 'short_term',
       topTracks: [],
       topArtists: [],
       topGenres: [],
@@ -39,7 +39,6 @@ class App extends Component {
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
     this.handleSeedSelect = this.handleSeedSelect.bind(this);
-    this.resetSeeds = this.resetSeeds.bind(this);
     this.updateViewMode = this.updateViewMode.bind(this);
   }
 
@@ -156,14 +155,6 @@ class App extends Component {
     console.log(this.searchParams);
     // this.setState({ searchParams });
     return success;
-  }
-
-  // Reset search params object to empty
-  resetSeeds() {
-    this.searchParams.seeds = [];
-    this.setState({
-      numSelected: 0,
-    });
   }
 
   // update between dekstop and mobile views based on screen size

@@ -1,10 +1,10 @@
-// Top tracks list component. Passes down track info to the DisplayItem Component.
+// Resulsts list component.
 
 /* eslint-disable implicit-arrow-linebreak */
 import React from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import DisplayItem from './DisplayItem';
+import DisplayItem from '../Helpers/DisplayItem';
 
 const styles = theme => ({
   trackItem: {
@@ -12,7 +12,7 @@ const styles = theme => ({
   },
 });
 
-function TopTracks({ trackList, seedHandler }) {
+function Results({ trackList }) {
   // const { classes } = this.props;
 
   return (
@@ -22,16 +22,16 @@ function TopTracks({ trackList, seedHandler }) {
           trackID, name, artists, images,
         }) =>
           <DisplayItem key={trackID}
-            type="track"
+            type="result"
             id={trackID}
             primaryText={name}
             secondaryText={artists.join(', ')}
             image={images[0]}
-            seedHandler={seedHandler}
+            // seedHandler={seedHandler}
           />)}
       </List>
     </>
   );
 }
 
-export default withStyles(styles)(TopTracks);
+export default withStyles(styles)(Results);

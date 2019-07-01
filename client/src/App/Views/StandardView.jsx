@@ -3,8 +3,9 @@ import {
   Grid, Paper, Typography,
 } from '@material-ui/core';
 import {
-  StartButton, TopTracks, TopArtists, TopGenres, Results,
-} from '../Components';
+  TopTracks, TopArtists, TopGenres, Results, NumSelected,
+} from '../Components/DataDisplay';
+import { StartButton, ResetButton } from '../Components/Buttons';
 
 const styles = {
   Paper: {

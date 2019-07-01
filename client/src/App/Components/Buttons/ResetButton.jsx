@@ -17,7 +17,7 @@ function ResetButton(props) {
     e.preventDefault();
     console.log('Clicked reset button');
 
-    props.triggerReset();
+    window.location.reload();
   }
 
   return (

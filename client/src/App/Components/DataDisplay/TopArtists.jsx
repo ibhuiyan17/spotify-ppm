@@ -4,7 +4,7 @@
 import React from 'react';
 import { List } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import DisplayItem from './DisplayItem';
+import DisplayItem from '../Helpers/DisplayItem';
 
 const styles = theme => ({
   trackItem: {
