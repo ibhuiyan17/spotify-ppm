@@ -1,15 +1,23 @@
 /* eslint-disable */
 
 const express = require('express');
+const path = require('path');
 var request = require('request'); // "Request" library
 let cookieParser = require('cookie-parser');
 let cors = require('cors');
 var querystring = require('querystring');
 
+
 const app = express();
 const port = process.env.PORT || 3001;
 
+/*
 app.use(express.static(__dirname + '/public'))
+  .use(cors())
+  .use(cookieParser());
+*/
+
+app.use(express.static(path.join(__dirname, '/public')))
   .use(cors())
   .use(cookieParser());
 
