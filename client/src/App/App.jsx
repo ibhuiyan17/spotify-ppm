@@ -14,6 +14,8 @@ import { Tokens, View } from './Components/StateProvider';
 import { TitleBar } from './Components/AppBars';
 import { StandardView, CompactView } from './Views';
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+
 
 class App extends Component {
   constructor(props) {
@@ -22,8 +24,8 @@ class App extends Component {
       defaultView: true, // determines layout based on screen
       accessToken: '',
       refreshToken: '',
-      userInfo: {},
-      timeRange: 'short_term',
+      profileData: {},
+      timeRange: 'long_term',
       topTracks: [],
       topArtists: [],
       topGenres: [],
@@ -36,6 +38,7 @@ class App extends Component {
     };
 
     this.handleTokenUpdate = this.handleTokenUpdate.bind(this);
+    this.fetchUserData = this.fetchUserData.bind(this);
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
     this.handleSeedSelect = this.handleSeedSelect.bind(this);
@@ -51,19 +54,39 @@ class App extends Component {
     }, () => {
       console.log('access token updated: ', this.state.accessToken);
       console.log('refresh token updated: ', this.state.refreshToken);
+      this.fetchUserData();
       this.fetchSpotifyData();
     });
+  }
+
+  // fetch user profile data from backend server.
+  async fetchUserData() {
+    try {
+      console.log('starting fetch user');
+      const {
+        data: profileData,
+      } = await axios.get(`${backendUrl}/api/user/profile`, {
+        params: {
+          access_token: this.state.accessToken,
+        },
+      });
+
+      this.setState({ profileData });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // fetch user's spotify data from backend server.
   async fetchSpotifyData() {
     try {
+      console.log('starting fetch spotify data');
       // object destructuring
       const {
         data: {
           topTracks, topArtists, topGenres, featureAnalysis,
         },
-      } = await axios.get('/api/user/spotify_data', {
+      } = await axios.get(`${backendUrl}/api/user/spotify_data`, {
         params: {
           access_token: this.state.accessToken,
           time_range: this.state.timeRange,
@@ -75,7 +98,7 @@ class App extends Component {
         topArtists: [...topArtists],
         topGenres: [...topGenres],
         featureAnalysis,
-      });
+      }, () => console.log('finished fetch spotify data'));
     } catch (err) {
       console.log(err); // TODO: change these
     }
@@ -105,10 +128,10 @@ class App extends Component {
         data: {
           recommendations,
         },
-      } = await axios.get('api/recommendations', {
+      } = await axios.get(`${backendUrl}/api/recommendations`, {
         params,
       });
-  
+
       this.setState({
         results: recommendations,
       });
@@ -169,7 +192,7 @@ class App extends Component {
 
   render() {
     const viewProps = pick(this.state, [ // lodash func. for filtering object
-      'topTracks', 'topArtists', 'topGenres', 'results', 'numSelected',
+      'accessToken', 'profileData', 'topTracks', 'topArtists', 'topGenres', 'results', 'numSelected',
     ]);
     console.log('props: ', viewProps);
     return (

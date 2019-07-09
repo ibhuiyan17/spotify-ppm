@@ -4,13 +4,10 @@ import {
   TopTracks, TopArtists, TopGenres, Results, NumSelected,
 } from '../Components/DataDisplay';
 import { BottomNavBar } from '../Components/AppBars';
-import { StartButton, ResetButton } from '../Components/Buttons';
+import { StartButton, ResetButton } from '../Components/Control';
 
 
 const styles = theme => ({
-  displayedComponent: {
-    marginBottom: 50,
-  },
   numSelected: {
     position: 'fixed',
     right: 0,
@@ -19,22 +16,18 @@ const styles = theme => ({
   },
   startButton: {
     position: 'fixed',
-    right: 0,
-    top: 120,
-    width: '15%',
+    right: 10,
+    top: 350,
   },
   resetButton: {
     position: 'fixed',
-    right: 0,
-    top: 160,
-    width: '15%',
+    right: 10,
+    top: 390,
   },
   navBar: {
     position: 'fixed',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    maxHeight: 50,
+    top: 120,
+    right: 0,
   },
 });
 
@@ -121,7 +114,7 @@ class CompactView extends Component {
     return (
       <>
         <Grid>
-          <Grid item xs className={classes.displayedComponent}>
+          <Grid item xs>
             {this.displaySelectedComponent()}
           </Grid>
           <Grid item xs className={classes.navBar}>
@@ -136,19 +129,15 @@ class CompactView extends Component {
             </Paper>
           </Grid>
           <Grid item xs className={classes.startButton}>
-            <Paper elevation={0}>
-              <StartButton
-                compactViewHandler={this.switchToResults}
-                triggerFetch={fetchResults}
-              />
-            </Paper>
+            <StartButton
+              compactViewHandler={this.switchToResults}
+              triggerFetch={fetchResults}
+            />
           </Grid>
           <Grid item xs className={classes.resetButton}>
-            <Paper elevation={0}>
-              <ResetButton
-                triggerReset={resetSelection}
-              />
-            </Paper>
+            <ResetButton
+              triggerReset={resetSelection}
+            />
           </Grid>
         </Grid>
       </>

@@ -15,6 +15,16 @@ module.exports = class SpotifyRequests {
     });
   }
 
+  // return unfiltered user profile data.
+  async getUserData() {
+    try {
+      const response = await this.instance.get('me');
+      return response.data;
+    } catch (error) {
+      console.log('error with user data: ', error.message);
+    }
+  }
+
   /* return a list of user's top 50 favorite tracks.
     input: desired time range
     output: list of user's top tracks with metadata
@@ -89,6 +99,7 @@ module.exports = class SpotifyRequests {
     }
   }
 
+  // return available genres to use as seeds.
   async getAvailableGenreSeeds() {
     try {
       const response = await this.instance.get('recommendations/available-genre-seeds');

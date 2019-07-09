@@ -5,8 +5,7 @@ import {
 import {
   TopTracks, TopArtists, TopGenres, Results, NumSelected,
 } from '../Components/DataDisplay';
-import { StartButton, ResetButton, ExportPlaylist } from '../Components/Control';
-
+import { StartButton, ResetButton } from '../Components/Control';
 
 const styles = {
   Paper: {
@@ -36,8 +35,7 @@ const styles = {
 };
 
 function StandardView({
-  accessToken, profileData, topTracks, topArtists, topGenres, handleSeedSelect,
-  numSelected, results, fetchResults, resetSelection,
+  topTracks, topArtists, topGenres, handleSeedSelect, numSelected, results, fetchResults, resetSelection,
 }) {
   return (
     <>
@@ -84,37 +82,35 @@ function StandardView({
             />
           </Paper>
         </Grid>
-        <Grid item xs style={styles.numSelected}>
+        <Grid item xs styles={styles.numSelected}>
           <NumSelected
             count={numSelected}
           />
         </Grid>
-        <Grid item xs style={styles.startButton}>
+        <Grid item xs styles={styles.startButton}>
           <StartButton
             triggerFetch={fetchResults}
           />
         </Grid>
-        <Grid item xs style={styles.resetButton}>
+        <Grid item xs styles={styles.resetButton}>
           <ResetButton
             triggerReset={resetSelection}
           />
         </Grid>
       </Grid>
+
+
       <Typography
         variant="h3"
         style={{ marginTop: 20 }}
       >
         Results
       </Typography>
-      {results.length !== 0
-        ? <ExportPlaylist
-            accessToken={accessToken}
-            userID={profileData.id}
-            playlist={results}
-          />
-        : null}
       <Results
         trackList={results}
+      />
+      <StartButton
+        triggerFetch={fetchResults}
       />
     </>
   );

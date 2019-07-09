@@ -26,8 +26,11 @@ app.use((req, res, next) => {
   next();
 });
 
-var client_id = process.env.SPOTIFY_CLIENT_ID;
-var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+// var client_id = process.env.SPOTIFY_CLIENT_ID;
+// var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+var client_id = '3ccf5cf4aa5d4816b9128d9b59fb8ff5';
+var client_secret = '74c0e1df513346a89c9401b67450b68e';
+
 var redirect_uri = 'http://localhost:3001/callback'; // Your redirect uri
 
 
@@ -39,7 +42,7 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email user-top-read';
+  var scope = 'user-read-private user-read-email user-top-read playlist-modify-public';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -117,16 +120,29 @@ app.get('/callback', function(req, res) {
 const utils = require('./utils');
 const SpotifyRequests = require('./spotify-requests');
 
-  /*
-    GET user's data from spotify. Top 50 tracks
-    and artists, feature analysis, and top genres
-  */
+/*
+  GET user profile
+*/
+app.get('/api/user/profile', async(req, res) => {
+  const spotify = new SpotifyRequests(req.query.access_token);
+
+  try {
+    const returnObject = await utils.getFilteredUserData(spotify)
+    res.send(returnObject);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+/*
+  GET user's data from spotify. Top 50 tracks
+  and artists, feature analysis, and top genres
+*/
  app.get('/api/user/spotify_data', async (req, res) => {
   const returnObject = {};
 
   const spotify = new SpotifyRequests(req.query.access_token);
 
-  // TODO: initialize spotify instance
   try {
     const [topTracks, topArtists] = await Promise.all([
       utils.getFilteredTopTracks(spotify, req.query.time_range),
@@ -148,7 +164,9 @@ const SpotifyRequests = require('./spotify-requests');
 });
 
 
-// GET recommendations
+/*
+  GET recommendations based on seeds
+*/
 app.get('/api/recommendations', async (req, res) => {
   const returnObject = {
     recommendations: [],

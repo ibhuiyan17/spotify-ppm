@@ -1,5 +1,21 @@
 /* eslint-disable no-use-before-define */
 const stats = require('simple-statistics'); // utility library for common stats funcs.
+const pick = require('lodash.pick');
+
+/*
+  input: spotify request object
+  output: filtered object containing user data
+*/
+async function getFilteredUserData(spotifyInstance) {
+  try {
+    return (pick(await spotifyInstance.getUserData(), [
+      'display_name', 'id', 'images',
+    ]));
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
 
 /*
   input: spotify request object, desired time range
@@ -197,6 +213,7 @@ function $calculateMedian(array) {
 }
 
 module.exports = {
+  getFilteredUserData,
   getFilteredTopTracks,
   getFilteredTopArtists,
   calculateFeatureAnalysis,

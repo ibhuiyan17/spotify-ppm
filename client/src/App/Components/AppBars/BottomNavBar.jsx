@@ -29,7 +29,7 @@ class BottomNavBar extends Component {
 
   render() {
     return (
-      <BottomNavigation showLabels
+      <BottomNavigation showLabels style={{display: 'flex', flexDirection: 'column', height: '100%'}}
         value={this.props.selectedVal}
         onChange={(e, newValue) => this.handleChange(e, newValue)}
       >
