@@ -4,8 +4,8 @@ import queryString from 'query-string';
 class Tokens extends Component {
   componentDidMount() {
     const query = this.props.location.search;
-    const parsed = queryString.parse(query);
-    this.props.handler(parsed.access_token, parsed.refresh_token);
+    const { access_token, refresh_token, logged_in } = queryString.parse(query);
+    this.props.handler(access_token, refresh_token, logged_in);
   }
 
   // eslint-disable-next-line class-methods-use-this

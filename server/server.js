@@ -11,12 +11,6 @@ var querystring = require('querystring');
 const app = express();
 const port = process.env.PORT || 3001;
 
-/*
-app.use(express.static(__dirname + '/public'))
-  .use(cors())
-  .use(cookieParser());
-*/
-
 app.use(express.static(path.join(__dirname, '/public')))
   .use(cors())
   .use(cookieParser());
@@ -26,12 +20,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// var client_id = process.env.SPOTIFY_CLIENT_ID;
-// var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-var client_id = '3ccf5cf4aa5d4816b9128d9b59fb8ff5';
-var client_secret = '74c0e1df513346a89c9401b67450b68e';
+var client_id = process.env.SPOTIFY_CLIENT_ID;
+var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
-var redirect_uri = 'http://localhost:3001/callback'; // Your redirect uri
+var redirect_uri = process.env.REDIRECT_URI || 'http://localhost:3001/callback';
+var app_uri = process.env.APP_URI || 'http://localhost:3000/?';
 
 
 /* ---------------------------------------- Authentication Routes ---------------------------------------- */
@@ -100,13 +93,14 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('http://localhost:3000/?' +
+        res.redirect(`http://localhost:3000/?` +
           querystring.stringify({
             access_token: access_token,
-            refresh_token: refresh_token
+            refresh_token: refresh_token,
+            logged_in: true,
           }));
       } else {
-        res.redirect('http://localhost:3000/?' +
+        res.redirect(`http://localhost:3000/?` +
           querystring.stringify({
             error: 'invalid_token'
           }));

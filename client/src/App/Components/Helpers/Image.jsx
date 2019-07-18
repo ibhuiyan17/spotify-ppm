@@ -1,21 +1,12 @@
-/* Image Component for rendering trackart or artist photo */
+// Wrapper for standard html <img> tag
 
 import React from 'react';
 
-const styles = {
-  trackart: {
-    height: 50,
-    width: 50,
-    marginRight: 10,
-  },
-};
-
-function Image({ imageUrl, imageType }) {
+function Image({ imageSrc, imageAlt, style }) {
   return (
-    <img
-      style={styles.trackart}
-      src={imageUrl}
-      alt={imageType}
+    <img style={style}
+      src={imageSrc}
+      alt={imageAlt}
     />
   );
 }

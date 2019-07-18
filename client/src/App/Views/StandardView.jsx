@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+// Desktop layout componenent.
+
+import React from 'react';
 import {
   Grid, Paper, Typography,
 } from '@material-ui/core';
 import {
-  TopTracks, TopArtists, TopGenres, Results, NumSelected,
+  TopTracks, TopArtists, TopGenres, Results, NumSelected, Label,
 } from '../Components/DataDisplay';
 import { StartButton, ResetButton, ExportPlaylist } from '../Components/Control';
 
@@ -16,6 +18,13 @@ const styles = {
     marginLeft: 5,
     maxHeight: 400,
     overflow: 'auto', // makes it scrollable
+  },
+  topLabel: {
+    marginLeft: 5,
+    marginTop: 5,
+  },
+  resultLabel: {
+    marginTop: 20,
   },
   numSelected: {
     position: 'fixed',
@@ -43,12 +52,7 @@ function StandardView({
     <>
       <Grid container spacing={1}>
         <Grid item xs>
-          <Typography
-            variant="h6"
-            style={{ marginLeft: 5, marginTop: 5 }}
-          >
-            Your Top Tracks
-          </Typography>
+          <Label style={styles.topLabel} text="Your Top Tracks" variant="h6" color="secondary"/>
           <Paper style={styles.Paper} >
             <TopTracks
               trackList={topTracks}
@@ -57,12 +61,7 @@ function StandardView({
           </Paper>
         </Grid>
         <Grid item xs>
-          <Typography
-            variant="h6"
-            style={{ marginLeft: 5, marginTop: 5 }}
-          >
-            Your Top Artists
-          </Typography>
+          <Label style={styles.topLabel} text="Your Top Artists" variant="h6" color="secondary"/>
           <Paper style={styles.Paper}>
             <TopArtists
               artistList={topArtists}
@@ -71,12 +70,7 @@ function StandardView({
           </Paper>
         </Grid>
         <Grid item xs>
-          <Typography
-            variant="h6"
-            style={{ marginLeft: 5, marginTop: 5 }}
-          >
-            Your Top Genres
-          </Typography>
+          <Label style={styles.topLabel} text="Your Top Genres" variant="h6" color="secondary"/>
           <Paper style={styles.Paper}>
             <TopGenres
               genreList={topGenres}
@@ -100,12 +94,7 @@ function StandardView({
           />
         </Grid>
       </Grid>
-      <Typography
-        variant="h3"
-        style={{ marginTop: 20 }}
-      >
-        Results
-      </Typography>
+      <Label style={styles.resultLabel} text="Results" variant="h3" color="secondary"/>
       {results.length !== 0
         ? <ExportPlaylist
             accessToken={accessToken}

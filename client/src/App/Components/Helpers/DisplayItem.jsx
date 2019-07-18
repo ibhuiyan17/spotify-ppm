@@ -6,6 +6,14 @@ import {
 } from '@material-ui/core';
 import Image from './Image';
 
+const styles = {
+  displayItemImg: {
+    height: 50,
+    width: 50,
+    marginRight: 10,
+  },
+};
+
 class DisplayItem extends Component {
   constructor(props) {
     super(props);
@@ -51,8 +59,9 @@ class DisplayItem extends Component {
       >
         {image
           && <Image
-            imageUrl={image.url}
-            imageType={type === 'track' ? 'trackart' : 'artist'}
+            imageSrc={image.url}
+            imageAlt={type === 'track' ? 'trackart' : 'artist'}
+            style={styles.displayItemImg}
           />
         }
         <br/><br/>

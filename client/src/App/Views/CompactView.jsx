@@ -1,13 +1,21 @@
+// Compact layout component.
+
 import React, { Component } from 'react';
-import { Grid, Paper, Typography, withStyles } from '@material-ui/core';
 import {
-  TopTracks, TopArtists, TopGenres, Results, NumSelected,
+  Grid, Paper, Typography,
+} from '@material-ui/core';
+import {
+  TopTracks, TopArtists, TopGenres, Results, NumSelected, Label,
 } from '../Components/DataDisplay';
 import { BottomNavBar } from '../Components/AppBars';
 import { StartButton, ResetButton } from '../Components/Control';
 
 
-const styles = theme => ({
+const styles = {
+  label: {
+    marginLeft: 5,
+    marginTop: 5,
+  },
   numSelected: {
     position: 'fixed',
     right: 0,
@@ -29,7 +37,7 @@ const styles = theme => ({
     top: 120,
     right: 0,
   },
-});
+};
 
 
 class CompactView extends Component {
@@ -58,58 +66,38 @@ class CompactView extends Component {
   displaySelectedComponent() {
     return <>
       <div style={{ display: this.state.selectedVal === 'tracks' ? 'block' : 'none' }}>
-      <Typography
-        variant="h4"
-        style={{ marginLeft: 5, marginTop: 5 }}
-      >
-        Your Top Tracks
-      </Typography>
+      <Label style={styles.label} text="Your Top Tracks" variant="h4" color="secondary"/>
       <TopTracks
         trackList={this.props.topTracks}
         seedHandler={this.props.handleSeedSelect}
       />
-    </div>
-    <div style={{ display: this.state.selectedVal === 'artists' ? 'block' : 'none' }}>
-      <Typography
-        variant="h4"
-        style={{ marginLeft: 5, marginTop: 5 }}
-      >
-        Your Top Artists
-      </Typography>
-      <TopArtists
-        artistList={this.props.topArtists}
-        seedHandler={this.props.handleSeedSelect}
-      />
-    </div>
-    <div style={{ display: this.state.selectedVal === 'genres' ? 'block' : 'none' }}>
-      <Typography
-        variant="h4"
-        style={{ marginLeft: 5, marginTop: 5 }}
-      >
-        Your Top Genres
-      </Typography>
-      <TopGenres
-        genreList={this.props.topGenres}
-        seedHandler={this.props.handleSeedSelect}
-      />
-    </div>
-    <div style={{ display: this.state.selectedVal === 'results' ? 'block' : 'none' }}>
-      <Typography
-        variant="h4"
-        style={{ marginLeft: 5, marginTop: 5 }}
-      >
-        Results
-      </Typography>
-      <Results
-        trackList={this.props.results}
-        seedHandler={this.props.handleSeedSelect}
-      />
-    </div></>;
+      </div>
+      <div style={{ display: this.state.selectedVal === 'artists' ? 'block' : 'none' }}>
+        <Label style={styles.label} text="Your Top Artists" variant="h4" color="secondary"/>
+        <TopArtists
+          artistList={this.props.topArtists}
+          seedHandler={this.props.handleSeedSelect}
+        />
+      </div>
+      <div style={{ display: this.state.selectedVal === 'genres' ? 'block' : 'none' }}>
+        <Label style={styles.label} text="Your Top Genres" variant="h4" color="secondary"/>
+        <TopGenres
+          genreList={this.props.topGenres}
+          seedHandler={this.props.handleSeedSelect}
+        />
+      </div>
+      <div style={{ display: this.state.selectedVal === 'results' ? 'block' : 'none' }}>
+        <Label style={styles.label} text="Results" variant="h4" color="secondary"/>
+        <Results
+          trackList={this.props.results}
+          seedHandler={this.props.handleSeedSelect}
+        />
+      </div></>;
   }
 
   render() {
     const {
-      classes, numSelected, fetchResults, resetSelection,
+      numSelected, fetchResults, resetSelection,
     } = this.props;
     return (
       <>
@@ -117,24 +105,24 @@ class CompactView extends Component {
           <Grid item xs>
             {this.displaySelectedComponent()}
           </Grid>
-          <Grid item xs className={classes.navBar}>
+          <Grid item xs style={styles.navBar}>
             <BottomNavBar
               handler={this.displayHandler}
               selectedVal={this.state.selectedVal}
             />
           </Grid>
-          <Grid item xs className={classes.numSelected}>
+          <Grid item xs style={styles.numSelected}>
             <Paper elevation={0}>
               <NumSelected count={numSelected} />
             </Paper>
           </Grid>
-          <Grid item xs className={classes.startButton}>
+          <Grid item xs style={styles.startButton}>
             <StartButton
               compactViewHandler={this.switchToResults}
               triggerFetch={fetchResults}
             />
           </Grid>
-          <Grid item xs className={classes.resetButton}>
+          <Grid item xs style={styles.resetButton}>
             <ResetButton
               triggerReset={resetSelection}
             />
@@ -145,4 +133,4 @@ class CompactView extends Component {
   }
 }
 
-export default withStyles(styles)(CompactView);
+export default CompactView;

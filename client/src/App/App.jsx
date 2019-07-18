@@ -1,4 +1,4 @@
-/* Top level component for the app. */
+// Top level component for the app.
 
 /* eslint-disable import/no-unresolved */
 import React, { Component } from 'react';
@@ -7,12 +7,11 @@ import {
   Route,
 } from 'react-router-dom';
 import axios from 'axios';
-import { CssBaseline, Grid } from '@material-ui/core';
-
 import pick from 'lodash.pick';
+import { CssBaseline, Grid } from '@material-ui/core';
 import { Tokens, View } from './Components/StateProvider';
 import { TitleBar } from './Components/AppBars';
-import { StandardView, CompactView } from './Views';
+import { LandingPage, StandardView, CompactView } from './Views';
 
 const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
 
@@ -20,12 +19,14 @@ const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    // this.state = {};
+    this.initialState = {
+      loggedIn: false,
       defaultView: true, // determines layout based on screen
       accessToken: '',
       refreshToken: '',
       profileData: {},
-      timeRange: 'long_term',
+      timeRange: 'short_term',
       topTracks: [],
       topArtists: [],
       topGenres: [],
@@ -33,11 +34,14 @@ class App extends Component {
       numSelected: 0,
       results: [],
     };
+
+    this.state = this.initialState;
     this.searchParams = { // seeds -> list of seeds, targets
       seeds: [],
     };
 
     this.handleTokenUpdate = this.handleTokenUpdate.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
     this.fetchUserData = this.fetchUserData.bind(this);
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
@@ -46,9 +50,11 @@ class App extends Component {
   }
 
   // update access and refresh tokens.
-  handleTokenUpdate(accessToken, refreshToken) {
+  handleTokenUpdate(accessToken, refreshToken, loggedIn) {
     // TODO: Do these tokens get updated after first set?
+    if (!loggedIn) return; // only run function if user is logged in
     this.setState({
+      loggedIn: true,
       accessToken,
       refreshToken,
     }, () => {
@@ -59,10 +65,15 @@ class App extends Component {
     });
   }
 
-  // fetch user profile data from backend server.
+  // handler to reset state and log out.
+  handleLogout() {
+    console.log('logout clicked');
+    this.setState(this.initialState, () => console.log('resetting state'));
+  }
+
+  // fetch user profile data from backend server and set state.
   async fetchUserData() {
     try {
-      console.log('starting fetch user');
       const {
         data: profileData,
       } = await axios.get(`${backendUrl}/api/user/profile`, {
@@ -77,7 +88,7 @@ class App extends Component {
     }
   }
 
-  // fetch user's spotify data from backend server.
+  // fetch user's spotify data from backend server and set state.
   async fetchSpotifyData() {
     try {
       console.log('starting fetch spotify data');
@@ -94,17 +105,14 @@ class App extends Component {
       });
 
       this.setState({
-        topTracks: [...topTracks],
-        topArtists: [...topArtists],
-        topGenres: [...topGenres],
-        featureAnalysis,
-      }, () => console.log('finished fetch spotify data'));
+        topTracks, topArtists, topGenres, featureAnalysis,
+      });
     } catch (err) {
       console.log(err); // TODO: change these
     }
   }
 
-  // fetch results based on selected seeds from backend server.
+  // fetch results based on selected seeds from backend server and set state.
   async fetchResults() {
     const params = { // holds request data for backend
       access_token: this.state.accessToken,
@@ -146,13 +154,12 @@ class App extends Component {
           add or remove
   */
   handleSeedSelect(action, seedObj) {
-    // const searchParams = { ...this.searchParams };
     let success = true; // signals failed action
 
-    switch (action) { // TODO: use array push
-      case 'add': {
+    switch (action) {
+      case 'add': { // add seed if there is less than 5 present and update state
         if (this.searchParams.seeds.length < 5) {
-          this.searchParams.seeds = [...this.searchParams.seeds, seedObj];
+          this.searchParams.seeds = [...this.searchParams.seeds, seedObj]; // TODO: try array push
           this.setState(prevState => ({
             numSelected: prevState.numSelected + 1,
           }));
@@ -161,7 +168,7 @@ class App extends Component {
         }
         break;
       }
-      case 'remove': {
+      case 'remove': { // remove specified seed object and update state
         this.searchParams.seeds = this.searchParams.seeds.filter(({ type, id }) => {
           return (type === seedObj.type) // remove if object matches
             ? id !== seedObj.id
@@ -175,26 +182,23 @@ class App extends Component {
       default:
         break;
     }
-    console.log(this.searchParams);
-    // this.setState({ searchParams });
     return success;
   }
 
   // update between dekstop and mobile views based on screen size
   updateViewMode(width, height) {
     const updatedDefaultView = width > height;
-    console.log(width, height);
-    console.log('default view: ', updatedDefaultView);
+
     if (updatedDefaultView !== this.state.defaultView) { // only update if it changed
       this.setState({ defaultView: updatedDefaultView });
     }
   }
 
   render() {
-    const viewProps = pick(this.state, [ // lodash func. for filtering object
+    const viewProps = pick(this.state, [ // filter selected props to send to views
       'accessToken', 'profileData', 'topTracks', 'topArtists', 'topGenres', 'results', 'numSelected',
     ]);
-    console.log('props: ', viewProps);
+
     return (
       <>
         <CssBaseline />
@@ -206,23 +210,30 @@ class App extends Component {
         </Router>
         <View handler={this.updateViewMode} />
         <Grid>
-          <TitleBar />
-          <Grid item xl>
-            {this.state.defaultView
-              ? <StandardView
-                  { ...viewProps }
-                  handleSeedSelect={this.handleSeedSelect}
-                  fetchResults={this.fetchResults}
-                  resetSelection={this.resetSeeds}
-                />
-              : <CompactView
-                  { ...viewProps }
-                  handleSeedSelect={this.handleSeedSelect}
-                  fetchResults={this.fetchResults}
-                  resetSelection={this.resetSeeds}
-                />
-            }
-          </Grid>
+          <TitleBar
+            backendUrl={backendUrl}
+            loggedIn={this.state.loggedIn}
+            logoutHandler={this.handleLogout}
+          />
+          {!this.state.loggedIn
+            ? <LandingPage />
+            : <Grid item xl>
+              {this.state.defaultView
+                ? <StandardView
+                    { ...viewProps }
+                    handleSeedSelect={this.handleSeedSelect}
+                    fetchResults={this.fetchResults}
+                    resetSelection={this.resetSeeds}
+                  />
+                : <CompactView
+                    { ...viewProps }
+                    handleSeedSelect={this.handleSeedSelect}
+                    fetchResults={this.fetchResults}
+                    resetSelection={this.resetSeeds}
+                  />
+              }
+              </Grid>
+          }
         </Grid>
       </>
     );
