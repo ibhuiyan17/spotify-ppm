@@ -22,6 +22,7 @@ function TopArtists({ artistList, seedHandler }) {
           artistID, name, genres, images,
         }) =>
           <DisplayItem key={artistID}
+            isButton={true}
             type="artist"
             id={artistID}
             primaryText={name}

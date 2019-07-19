@@ -29,29 +29,28 @@ const styles = {
   numSelected: {
     position: 'fixed',
     right: 0,
-    top: 80,
-    width: '20%',
+    top: 120,
   },
   startButton: {
     position: 'fixed',
     right: 10,
-    top: 350,
+    top: 160,
   },
   resetButton: {
     position: 'fixed',
     right: 10,
-    top: 390,
+    top: 200,
   },
 };
 
 function StandardView({
   accessToken, profileData, topTracks, topArtists, topGenres, handleSeedSelect,
-  numSelected, results, fetchResults, resetSelection,
+  numSelected, results, fetchResults, resetHandler,
 }) {
   return (
     <>
       <Grid container spacing={1}>
-        <Grid item xs>
+        <Grid item xs={4}>
           <Label style={styles.topLabel} text="Your Top Tracks" variant="h6" color="secondary"/>
           <Paper style={styles.Paper} >
             <TopTracks
@@ -60,7 +59,7 @@ function StandardView({
             />
           </Paper>
         </Grid>
-        <Grid item xs>
+        <Grid item xs={4}>
           <Label style={styles.topLabel} text="Your Top Artists" variant="h6" color="secondary"/>
           <Paper style={styles.Paper}>
             <TopArtists
@@ -69,7 +68,7 @@ function StandardView({
             />
           </Paper>
         </Grid>
-        <Grid item xs>
+        <Grid item xs={4}>
           <Label style={styles.topLabel} text="Your Top Genres" variant="h6" color="secondary"/>
           <Paper style={styles.Paper}>
             <TopGenres
@@ -77,6 +76,22 @@ function StandardView({
               seedHandler={handleSeedSelect}
             />
           </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          {results.length !== 0
+            ? <>
+                <Label style={styles.resultLabel} text="Results" variant="h3" color="secondary"/>
+                <ExportPlaylist
+                  accessToken={accessToken}
+                  userID={profileData.id}
+                  playlist={results}
+                />
+                <Results
+                  trackList={results}
+                />
+              </>
+            : null
+          }
         </Grid>
         <Grid item xs style={styles.numSelected}>
           <NumSelected
@@ -86,25 +101,16 @@ function StandardView({
         <Grid item xs style={styles.startButton}>
           <StartButton
             triggerFetch={fetchResults}
+            numSelected={numSelected}
           />
         </Grid>
         <Grid item xs style={styles.resetButton}>
           <ResetButton
-            triggerReset={resetSelection}
+            resetHandler={resetHandler}
           />
         </Grid>
       </Grid>
-      <Label style={styles.resultLabel} text="Results" variant="h3" color="secondary"/>
-      {results.length !== 0
-        ? <ExportPlaylist
-            accessToken={accessToken}
-            userID={profileData.id}
-            playlist={results}
-          />
-        : null}
-      <Results
-        trackList={results}
-      />
+
     </>
   );
 }

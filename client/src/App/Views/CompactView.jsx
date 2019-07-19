@@ -8,7 +8,7 @@ import {
   TopTracks, TopArtists, TopGenres, Results, NumSelected, Label,
 } from '../Components/DataDisplay';
 import { BottomNavBar } from '../Components/AppBars';
-import { StartButton, ResetButton } from '../Components/Control';
+import { StartButton, ResetButton, ExportPlaylist } from '../Components/Control';
 
 
 const styles = {
@@ -25,16 +25,16 @@ const styles = {
   startButton: {
     position: 'fixed',
     right: 10,
-    top: 350,
+    top: 370,
   },
   resetButton: {
     position: 'fixed',
     right: 10,
-    top: 390,
+    top: 410,
   },
   navBar: {
     position: 'fixed',
-    top: 120,
+    top: 150,
     right: 0,
   },
 };
@@ -44,7 +44,7 @@ class CompactView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedVal: 'tracks', // represents chosen tab
+      selectedVal: this.props.initialTab, // represents chosen tab
     };
 
     this.displayHandler = this.displayHandler.bind(this);
@@ -88,6 +88,11 @@ class CompactView extends Component {
       </div>
       <div style={{ display: this.state.selectedVal === 'results' ? 'block' : 'none' }}>
         <Label style={styles.label} text="Results" variant="h4" color="secondary"/>
+        <ExportPlaylist
+              accessToken={this.props.accessToken}
+              userID={this.props.profileData.id}
+              playlist={this.props.results}
+        />
         <Results
           trackList={this.props.results}
           seedHandler={this.props.handleSeedSelect}
@@ -97,7 +102,7 @@ class CompactView extends Component {
 
   render() {
     const {
-      numSelected, fetchResults, resetSelection,
+      numSelected, fetchResults, resetHandler,
     } = this.props;
     return (
       <>
@@ -120,11 +125,12 @@ class CompactView extends Component {
             <StartButton
               compactViewHandler={this.switchToResults}
               triggerFetch={fetchResults}
+              numSelected={numSelected}
             />
           </Grid>
           <Grid item xs style={styles.resetButton}>
             <ResetButton
-              triggerReset={resetSelection}
+              resetHandler={resetHandler}
             />
           </Grid>
         </Grid>

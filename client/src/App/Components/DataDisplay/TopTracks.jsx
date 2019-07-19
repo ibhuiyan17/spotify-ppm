@@ -22,6 +22,7 @@ function TopTracks({ trackList, seedHandler }) {
           trackID, name, artists, images,
         }) =>
           <DisplayItem key={trackID}
+            isButton={true}
             type="track"
             id={trackID}
             primaryText={name}

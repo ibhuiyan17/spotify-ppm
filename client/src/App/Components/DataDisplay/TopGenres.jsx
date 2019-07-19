@@ -20,6 +20,7 @@ function TopGenres({ genreList, seedHandler }) {
       <List className="artist-list">
         {genreList.map(genre =>
           <DisplayItem key={genre}
+            isButton={true}
             type="genre"
             id={genre}
             primaryText={genre}

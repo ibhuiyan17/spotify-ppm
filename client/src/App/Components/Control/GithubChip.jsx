@@ -18,7 +18,7 @@ function GithubChip({ style }) {
       avatar={<Avatar alt="octocat" src="/images/octocat.png" />}
       label="view source on github"
       onClick={e => handleClick(e)}
-      style={style}
+      style={{marginBottom: 15}}
     />
   );
 }

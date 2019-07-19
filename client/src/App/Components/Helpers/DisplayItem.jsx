@@ -26,6 +26,9 @@ class DisplayItem extends Component {
 
   handleClick(e, type, id) {
     e.preventDefault();
+
+    if (!this.props.isButton) return; // prevent clicking results
+
     console.log(type);
     const { seedHandler } = this.props;
     const seedObj = { type, id };
@@ -53,7 +56,7 @@ class DisplayItem extends Component {
       <ListItem
         alignItems="flex-start"
         divider={true}
-        button={true}
+        button={this.props.isButton}
         selected={this.state.selected}
         onClick={e => this.handleClick(e, type, id)}
       >

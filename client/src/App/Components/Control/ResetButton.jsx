@@ -12,10 +12,12 @@ const styles = theme => ({
 });
 
 
-function ResetButton(props) {
+function ResetButton({ resetHandler }) {
   function handleClick(e) {
     e.preventDefault();
     console.log('Clicked reset button');
+
+    //resetHandler(); // call parent handler to reset app state
 
     window.location.reload();
   }

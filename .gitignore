@@ -9,3 +9,4 @@ node_modules
 #examples
 web-api-auth-examples/
 
+server/.env

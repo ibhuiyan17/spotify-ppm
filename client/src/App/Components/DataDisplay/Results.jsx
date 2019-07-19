@@ -22,6 +22,7 @@ function Results({ trackList }) {
           trackID, name, artists, images,
         }) =>
           <DisplayItem key={trackID}
+            isButton={false}
             type="result"
             id={trackID}
             primaryText={name}

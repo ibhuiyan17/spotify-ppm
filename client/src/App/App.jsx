@@ -13,7 +13,8 @@ import { Tokens, View } from './Components/StateProvider';
 import { TitleBar } from './Components/AppBars';
 import { LandingPage, StandardView, CompactView } from './Views';
 
-const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+// const backendUrl = 'http://localhost:3001';
+const backendUrl = 'https://spotify-ppm-server.herokuapp.com';
 
 
 class App extends Component {
@@ -26,7 +27,7 @@ class App extends Component {
       accessToken: '',
       refreshToken: '',
       profileData: {},
-      timeRange: 'short_term',
+      timeRange: 'long_term',
       topTracks: [],
       topArtists: [],
       topGenres: [],
@@ -40,6 +41,7 @@ class App extends Component {
       seeds: [],
     };
 
+    this.resetSelection = this.resetSelection.bind(this);
     this.handleTokenUpdate = this.handleTokenUpdate.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
     this.fetchUserData = this.fetchUserData.bind(this);
@@ -47,6 +49,16 @@ class App extends Component {
     this.fetchResults = this.fetchResults.bind(this);
     this.handleSeedSelect = this.handleSeedSelect.bind(this);
     this.updateViewMode = this.updateViewMode.bind(this);
+  }
+
+  // reset seeds for new search
+  resetSelection() {
+    this.setState({
+      numSelected: 0,
+      // results: [],
+    });
+
+    this.searchParams.seeds = [];
   }
 
   // update access and refresh tokens.
@@ -190,7 +202,11 @@ class App extends Component {
     const updatedDefaultView = width > height;
 
     if (updatedDefaultView !== this.state.defaultView) { // only update if it changed
-      this.setState({ defaultView: updatedDefaultView });
+      this.setState({ defaultView: updatedDefaultView }, () => {
+        if (this.state.numSelected !== 0) {
+          this.resetSelection();
+        }
+      });
     }
   }
 
@@ -223,13 +239,14 @@ class App extends Component {
                     { ...viewProps }
                     handleSeedSelect={this.handleSeedSelect}
                     fetchResults={this.fetchResults}
-                    resetSelection={this.resetSeeds}
+                    resetHandler={this.resetSelection}
                   />
                 : <CompactView
                     { ...viewProps }
                     handleSeedSelect={this.handleSeedSelect}
                     fetchResults={this.fetchResults}
-                    resetSelection={this.resetSeeds}
+                    resetHandler={this.resetSelection}
+                    initialTab={this.state.results.length !== 0 ? 'results' : 'tracks'}
                   />
               }
               </Grid>

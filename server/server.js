@@ -1,4 +1,5 @@
 /* eslint-disable */
+require('dotenv').config() // import env variables
 
 const express = require('express');
 const path = require('path');
@@ -23,8 +24,8 @@ app.use((req, res, next) => {
 var client_id = process.env.SPOTIFY_CLIENT_ID;
 var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
-var redirect_uri = process.env.REDIRECT_URI || 'http://localhost:3001/callback';
-var app_uri = process.env.APP_URI || 'http://localhost:3000/?';
+var redirect_uri = process.env.REDIRECT_URI;
+var app_uri = process.env.APP_URI;
 
 
 /* ---------------------------------------- Authentication Routes ---------------------------------------- */
@@ -42,7 +43,8 @@ app.get('/login', function(req, res) {
       client_id: client_id,
       scope: scope,
       redirect_uri: redirect_uri,
-      state: state
+      state: state,
+      show_dialog: true
   }));
 });
 
@@ -93,14 +95,14 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect(`http://localhost:3000/?` +
+        res.redirect(app_uri +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token,
             logged_in: true,
           }));
       } else {
-        res.redirect(`http://localhost:3000/?` +
+        res.redirect(app_uri +
           querystring.stringify({
             error: 'invalid_token'
           }));

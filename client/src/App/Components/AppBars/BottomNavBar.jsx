@@ -5,7 +5,7 @@ import {
 import QueueMusic from '@material-ui/icons/QueueMusic';
 import RecentActors from '@material-ui/icons/RecentActors';
 import Category from '@material-ui/icons/Category';
-import Send from '@material-ui/icons/Send';
+import ViewList from '@material-ui/icons/ViewList';
 
 class BottomNavBar extends Component {
   constructor(props) {
@@ -49,9 +49,9 @@ class BottomNavBar extends Component {
           icon={<Category />}
         />
         <BottomNavigationAction
-          label="Go"
+          label="Results"
           value="results"
-          icon={<Send />}
+          icon={<ViewList />}
         />
       </BottomNavigation>
     );

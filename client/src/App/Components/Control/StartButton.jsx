@@ -12,15 +12,20 @@ const styles = theme => ({
 });
 
 
-function StartButton({ triggerFetch, compactViewHandler }) {
+function StartButton({ triggerFetch, compactViewHandler, numSelected }) {
   function handleClick(e) {
     e.preventDefault();
     console.log('Clicked start button');
+    console.log('numSelected: ', numSelected);
 
-    triggerFetch();
+    if (numSelected !== 0) {
+      triggerFetch();
 
-    if (compactViewHandler) { // runs specific handler for compact view
-      compactViewHandler();
+      if (compactViewHandler) { // runs specific handler for compact view
+        compactViewHandler();
+      }
+    } else {
+      alert('You must select at least 1 seed.');
     }
   }
 

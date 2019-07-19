@@ -30,8 +30,8 @@ function TitleBar({ backendUrl, loggedIn, logoutHandler }) {
     <Toolbar>
       <Image style={{ width: 30, height: 30, marginRight: 10}} imageSrc="/images/icon.png" />
       <Label style={styles.title}
-        text="  Personalized Playlist Maker for Spotify"
-        variant="h5"
+        text="  Personalized Playlist Maker"
+        variant="subtitle1"
         color="inherit"
       />
       {!loggedIn
@@ -39,7 +39,11 @@ function TitleBar({ backendUrl, loggedIn, logoutHandler }) {
             onClick={e => redirectLogin(e)}
             color="inherit"
           >
-            Log in with Spotify
+            <Label
+              text="Log in with Spotify"
+              variant="body2"
+              color="inherit"
+            />
           </Button>
         : <Button
             onClick={e => signalLogout(e)}

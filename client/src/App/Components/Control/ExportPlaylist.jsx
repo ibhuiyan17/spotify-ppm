@@ -105,7 +105,7 @@ class ExportPlaylist extends Component {
           color="primary"
           onClick={e => this.openExportDialog(e)}
         >
-          Export Playlist
+          Export as Playlist
         </Button>
         <Dialog
           onClose={this.closeExportDialog}
