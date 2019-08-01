@@ -21,11 +21,17 @@ app.use((req, res, next) => {
   next();
 });
 
-var client_id = process.env.SPOTIFY_CLIENT_ID;
-var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+// var client_id = process.env.SPOTIFY_CLIENT_ID;
+// var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
-var redirect_uri = process.env.REDIRECT_URI;
-var app_uri = process.env.APP_URI;
+// var redirect_uri = process.env.REDIRECT_URI;
+// var app_uri = process.env.APP_URI;
+
+
+var redirect_uri = 'http://localhost:3001/callback';
+var app_uri = 'http://localhost:3000/?';
+
+console.log('hi: ', client_id, client_secret, redirect_uri, app_uri);
 
 
 /* ---------------------------------------- Authentication Routes ---------------------------------------- */

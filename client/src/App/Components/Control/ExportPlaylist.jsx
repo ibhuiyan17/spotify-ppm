@@ -3,7 +3,7 @@
 
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import { Dialog, DialogTitle, TextField } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from '@material-ui/core';
 import axios from 'axios';
 
 class ExportPlaylist extends Component {
@@ -107,21 +107,28 @@ class ExportPlaylist extends Component {
         >
           Export as Playlist
         </Button>
-        <Dialog
-          onClose={this.closeExportDialog}
-          open={this.state.dialogOpen}
-          aria-labelledby="export-playlist-dialog"
-        >
+        <Dialog onClose={this.closeExportDialog} open={this.state.dialogOpen} aria-labelledby="export-playlist-dialog">
           <DialogTitle id="export-playlist-dialog">Export Playlist</DialogTitle>
-          <form noValidate autoComplete="off" onSubmit={this.handleSubmitPlaylist}>
+          <DialogContent>
+            <DialogContentText>
+              Export playlist straight to your Spotify Account. It can take a few minutes for the playlist to show up.
+            </DialogContentText>
             <TextField
+              autoFocus
+              margin="dense"
               id="playlist-name"
               label="Playlist Name"
-              margin="normal"
               value={this.state.playlistName}
               onChange={this.updatePlaylistName}
+              fullWidth
             />
-          </form>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleSubmitPlaylist} color="primary">
+              Export
+            </Button>
+          </DialogActions>
+
         </Dialog>
       </>
     );

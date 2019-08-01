@@ -12,9 +12,10 @@ import { CssBaseline, Grid } from '@material-ui/core';
 import { Tokens, View } from './Components/StateProvider';
 import { TitleBar } from './Components/AppBars';
 import { LandingPage, StandardView, CompactView } from './Views';
+import { TimeRangeSelector } from './Components/Control';
 
-// const backendUrl = 'http://localhost:3001';
-const backendUrl = 'https://spotify-ppm-server.herokuapp.com';
+const backendUrl = 'http://localhost:3001';
+// const backendUrl = 'https://spotify-ppm-server.herokuapp.com';
 
 
 class App extends Component {
@@ -27,7 +28,7 @@ class App extends Component {
       accessToken: '',
       refreshToken: '',
       profileData: {},
-      timeRange: 'long_term',
+      timeRange: 'short_term',
       topTracks: [],
       topArtists: [],
       topGenres: [],
@@ -41,27 +42,27 @@ class App extends Component {
       seeds: [],
     };
 
-    this.resetSelection = this.resetSelection.bind(this);
+    // local "cache" to avoid repeated fetches
+    this.dataCache = {
+      short_term: {},
+      medium_term: {},
+      long_term: {},
+    };
+
     this.handleTokenUpdate = this.handleTokenUpdate.bind(this);
+    this.resetSelection = this.resetSelection.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+    this.handleTimeRangeSelection = this.handleTimeRangeSelection.bind(this);
+    this.handleSeedSelect = this.handleSeedSelect.bind(this);
+    this.updateViewMode = this.updateViewMode.bind(this);
     this.fetchUserData = this.fetchUserData.bind(this);
     this.fetchSpotifyData = this.fetchSpotifyData.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
-    this.handleSeedSelect = this.handleSeedSelect.bind(this);
-    this.updateViewMode = this.updateViewMode.bind(this);
   }
 
-  // reset seeds for new search
-  resetSelection() {
-    this.setState({
-      numSelected: 0,
-      // results: [],
-    });
 
-    this.searchParams.seeds = [];
-  }
-
-  // update access and refresh tokens.
+  /* ---------------------------------------- Handlers ---------------------------------------- */
+  // Handler to update access and refresh tokens.
   handleTokenUpdate(accessToken, refreshToken, loggedIn) {
     // TODO: Do these tokens get updated after first set?
     if (!loggedIn) return; // only run function if user is logged in
@@ -77,88 +78,33 @@ class App extends Component {
     });
   }
 
-  // handler to reset state and log out.
+
+  // Handler to reset seeds for new search.
+  resetSelection() {
+    this.setState({
+      numSelected: 0,
+      // results: [],
+    });
+
+    this.searchParams.seeds = [];
+  }
+
+
+  // Handler to reset state and log out.
   handleLogout() {
     console.log('logout clicked');
     this.setState(this.initialState, () => console.log('resetting state'));
   }
 
-  // fetch user profile data from backend server and set state.
-  async fetchUserData() {
-    try {
-      const {
-        data: profileData,
-      } = await axios.get(`${backendUrl}/api/user/profile`, {
-        params: {
-          access_token: this.state.accessToken,
-        },
-      });
 
-      this.setState({ profileData });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  // fetch user's spotify data from backend server and set state.
-  async fetchSpotifyData() {
-    try {
-      console.log('starting fetch spotify data');
-      // object destructuring
-      const {
-        data: {
-          topTracks, topArtists, topGenres, featureAnalysis,
-        },
-      } = await axios.get(`${backendUrl}/api/user/spotify_data`, {
-        params: {
-          access_token: this.state.accessToken,
-          time_range: this.state.timeRange,
-        },
-      });
-
-      this.setState({
-        topTracks, topArtists, topGenres, featureAnalysis,
-      });
-    } catch (err) {
-      console.log(err); // TODO: change these
-    }
-  }
-
-  // fetch results based on selected seeds from backend server and set state.
-  async fetchResults() {
-    const params = { // holds request data for backend
-      access_token: this.state.accessToken,
-    };
-
-    // load seeds and convert them to strings
-    this.searchParams.seeds.forEach(({ type, id }) => {
-      const seedType = `seed_${type}s`;
-      if (!(seedType in params)) {
-        params[seedType] = [];
-      }
-      params[seedType].push(id);
+  // Handler to update time-range selection in App's state.
+  handleTimeRangeSelection(timeRange) {
+    this.setState({ timeRange }, () => {
+      // this.resetSelection();
+      this.fetchSpotifyData();
     });
-    /*
-    Object.keys(params).forEach((seedType) => {
-      params[seedType] = params[seedType].toString();
-    }); */
-
-    try {
-      const {
-        data: {
-          recommendations,
-        },
-      } = await axios.get(`${backendUrl}/api/recommendations`, {
-        params,
-      });
-
-      this.setState({
-        results: recommendations,
-      });
-    } catch (err) {
-      console.log(err);
-    }
   }
+
 
   /* Parent handler to update search params object.
     inputs: action (add/remove), seed object
@@ -197,7 +143,8 @@ class App extends Component {
     return success;
   }
 
-  // update between dekstop and mobile views based on screen size
+
+  // Update between dekstop and mobile views based on screen size.
   updateViewMode(width, height) {
     const updatedDefaultView = width > height;
 
@@ -209,6 +156,115 @@ class App extends Component {
       });
     }
   }
+  /* ----------------------------------------------------------------------------------------*/
+
+
+  /* ---------------------------------------- Fetch ---------------------------------------- */
+  // Fetch user profile data from backend server and set state.
+  async fetchUserData() {
+    try {
+      const {
+        data: profileData,
+      } = await axios.get(`${backendUrl}/api/user/profile`, {
+        params: {
+          access_token: this.state.accessToken,
+        },
+      });
+
+      this.setState({ profileData });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+
+  // Fetch user's spotify data from backend server and set state.
+  async fetchSpotifyData() {
+    // check if requested data is cached
+    const range = this.state.timeRange;
+    let cached = false;
+    if ((range === 'short_term' && Object.keys(this.dataCache.short_term).length !== 0)
+          || (range === 'medium_term' && Object.keys(this.dataCache.medium_term).length !== 0)
+          || (range === 'long_term' && Object.keys(this.dataCache.long_term).length !== 0)) {
+      cached = true;
+    }
+
+    console.log(cached);
+
+    if (!cached) { // fetch data
+      try {
+        console.log('starting fetch spotify data');
+        // object destructuring
+        const {
+          data: {
+            topTracks, topArtists, topGenres, featureAnalysis,
+          },
+        } = await axios.get(`${backendUrl}/api/user/spotify_data`, {
+          params: {
+            access_token: this.state.accessToken,
+            time_range: this.state.timeRange,
+          },
+        });
+
+        // store to cache
+        this.dataCache[range].tracks = topTracks;
+        this.dataCache[range].artists = topArtists;
+        this.dataCache[range].genres = topGenres;
+        this.dataCache[range].features = featureAnalysis;
+
+        console.log('cache: ', this.dataCache);
+      } catch (err) {
+        console.log(err); // TODO: change these
+      }
+    }
+
+    // update values state with cached data
+    this.setState({
+      topTracks: this.dataCache[range].tracks,
+      topArtists: this.dataCache[range].artists,
+      topGenres: this.dataCache[range].genres,
+      featureAnalysis: this.dataCache[range].features,
+    });
+  }
+
+
+  // Fetch results based on selected seeds from backend server and set state.
+  async fetchResults() {
+    const params = { // holds request data for backend
+      access_token: this.state.accessToken,
+    };
+
+    // load seeds and convert them to strings
+    this.searchParams.seeds.forEach(({ type, id }) => {
+      const seedType = `seed_${type}s`;
+      if (!(seedType in params)) {
+        params[seedType] = [];
+      }
+      params[seedType].push(id);
+    });
+    /*
+    Object.keys(params).forEach((seedType) => {
+      params[seedType] = params[seedType].toString();
+    }); */
+
+    try {
+      const {
+        data: {
+          recommendations,
+        },
+      } = await axios.get(`${backendUrl}/api/recommendations`, {
+        params,
+      });
+
+      this.setState({
+        results: recommendations,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  /* --------------------------------------------------------------------------------------- */
+
 
   render() {
     const viewProps = pick(this.state, [ // filter selected props to send to views
@@ -231,6 +287,7 @@ class App extends Component {
             loggedIn={this.state.loggedIn}
             logoutHandler={this.handleLogout}
           />
+          <TimeRangeSelector selectionHandler={this.handleTimeRangeSelection} />
           {!this.state.loggedIn
             ? <LandingPage />
             : <Grid item xl>
