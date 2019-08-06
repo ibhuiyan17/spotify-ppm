@@ -21,18 +21,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// var client_id = process.env.SPOTIFY_CLIENT_ID;
-// var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+var client_id = process.env.SPOTIFY_CLIENT_ID;
+var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
-// var redirect_uri = process.env.REDIRECT_URI;
-// var app_uri = process.env.APP_URI;
+var redirect_uri = process.env.REDIRECT_URI;
+var app_uri = process.env.APP_URI;
 
-
+/*
 var redirect_uri = 'http://localhost:3001/callback';
 var app_uri = 'http://localhost:3000/?';
-
-console.log('hi: ', client_id, client_secret, redirect_uri, app_uri);
-
+*/
 
 /* ---------------------------------------- Authentication Routes ---------------------------------------- */
 var stateKey = 'spotify_auth_state';
@@ -42,7 +40,7 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email user-top-read playlist-modify-public';
+  var scope = 'user-read-private user-top-read playlist-modify-public';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',

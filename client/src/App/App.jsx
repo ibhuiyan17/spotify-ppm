@@ -12,10 +12,9 @@ import { CssBaseline, Grid } from '@material-ui/core';
 import { Tokens, View } from './Components/StateProvider';
 import { TitleBar } from './Components/AppBars';
 import { LandingPage, StandardView, CompactView } from './Views';
-import { TimeRangeSelector } from './Components/Control';
 
-const backendUrl = 'http://localhost:3001';
-// const backendUrl = 'https://spotify-ppm-server.herokuapp.com';
+// const backendUrl = 'http://localhost:3001';
+const backendUrl = 'https://spotify-ppm-server.herokuapp.com';
 
 
 class App extends Component {
@@ -93,16 +92,21 @@ class App extends Component {
   // Handler to reset state and log out.
   handleLogout() {
     console.log('logout clicked');
-    this.setState(this.initialState, () => console.log('resetting state'));
+    this.setState(this.initialState, () => {
+      window.history.pushState({}, document.title, '/');
+      console.log('resetting state');
+    });
   }
 
 
   // Handler to update time-range selection in App's state.
   handleTimeRangeSelection(timeRange) {
-    this.setState({ timeRange }, () => {
-      // this.resetSelection();
-      this.fetchSpotifyData();
-    });
+    if (timeRange !== this.state.timeRange) { // only change if it's different
+      this.setState({ timeRange }, () => {
+        this.resetSelection();
+        this.fetchSpotifyData();
+      });
+    }
   }
 
 
@@ -220,10 +224,17 @@ class App extends Component {
 
     // update values state with cached data
     this.setState({
-      topTracks: this.dataCache[range].tracks,
-      topArtists: this.dataCache[range].artists,
-      topGenres: this.dataCache[range].genres,
-      featureAnalysis: this.dataCache[range].features,
+      topTracks: [],
+      topArtists: [],
+      topGenres: [],
+      featureAnalysis: {},
+    }, () => {
+      this.setState({
+        topTracks: this.dataCache[range].tracks,
+        topArtists: this.dataCache[range].artists,
+        topGenres: this.dataCache[range].genres,
+        featureAnalysis: this.dataCache[range].features,
+      });
     });
   }
 
@@ -287,7 +298,6 @@ class App extends Component {
             loggedIn={this.state.loggedIn}
             logoutHandler={this.handleLogout}
           />
-          <TimeRangeSelector selectionHandler={this.handleTimeRangeSelection} />
           {!this.state.loggedIn
             ? <LandingPage />
             : <Grid item xl>
@@ -297,12 +307,14 @@ class App extends Component {
                     handleSeedSelect={this.handleSeedSelect}
                     fetchResults={this.fetchResults}
                     resetHandler={this.resetSelection}
+                    handleTimeRangeSelection={this.handleTimeRangeSelection}
                   />
                 : <CompactView
                     { ...viewProps }
                     handleSeedSelect={this.handleSeedSelect}
                     fetchResults={this.fetchResults}
                     resetHandler={this.resetSelection}
+                    handleTimeRangeSelection={this.handleTimeRangeSelection}
                     initialTab={this.state.results.length !== 0 ? 'results' : 'tracks'}
                   />
               }

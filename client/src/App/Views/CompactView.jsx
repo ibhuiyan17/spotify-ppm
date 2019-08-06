@@ -8,7 +8,9 @@ import {
   TopTracks, TopArtists, TopGenres, Results, NumSelected, Label,
 } from '../Components/DataDisplay';
 import { BottomNavBar } from '../Components/AppBars';
-import { StartButton, ResetButton, ExportPlaylist } from '../Components/Control';
+import {
+  StartButton, ResetButton, ExportPlaylist, TimeRangeSelector,
+} from '../Components/Control';
 
 
 const styles = {
@@ -20,12 +22,13 @@ const styles = {
     position: 'fixed',
     right: 0,
     top: 80,
-    width: '20%',
+    width: '25%',
   },
   startButton: {
     position: 'fixed',
     right: 10,
-    top: 370,
+    // top: 430,
+    top: 370
   },
   resetButton: {
     position: 'fixed',
@@ -36,6 +39,12 @@ const styles = {
     position: 'fixed',
     top: 150,
     right: 0,
+  },
+  timeRangeSelector: {
+    position: 'fixed',
+    right: 2,
+    top: 455,
+    // width: '35%',
   },
 };
 
@@ -102,7 +111,7 @@ class CompactView extends Component {
 
   render() {
     const {
-      numSelected, fetchResults, resetHandler,
+      numSelected, fetchResults, resetHandler, handleTimeRangeSelection,
     } = this.props;
     return (
       <>
@@ -131,6 +140,11 @@ class CompactView extends Component {
           <Grid item xs style={styles.resetButton}>
             <ResetButton
               resetHandler={resetHandler}
+            />
+          </Grid>
+          <Grid item xs style={styles.timeRangeSelector}>
+            <TimeRangeSelector compactView
+              selectionHandler={handleTimeRangeSelection}
             />
           </Grid>
         </Grid>

@@ -1,0 +1,14 @@
+#!/bin/bash
+# run with . ./update-deployment (". " needed to source it directly to machine)
+
+echo $'\n\ncopying server and client directories of src into external deployment folder...\n'
+
+rsync -av --progress /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm/server/ /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm/server/
+rsync -av --progress /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm/client/ /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm/client/ --exclude node_modules
+
+echo $'\n..finished copying to deployment, changing directory into deployment\n'
+
+cd /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm
+
+echo $'\ncd into server and client and push to heroku master branch if there are any updates\n'
+echo $'type cd /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm when finished to return\n'

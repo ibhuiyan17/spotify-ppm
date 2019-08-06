@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  FormControl, InputLabel, Select, MenuItem, FilledInput,
+  FormControl, InputLabel, Select, MenuItem, FilledInput, FormHelperText,
 } from '@material-ui/core';
 
 class TimeRangeSelector extends Component {
@@ -35,6 +35,17 @@ class TimeRangeSelector extends Component {
           <MenuItem value={'medium_term'}>Medium Term</MenuItem>
           <MenuItem value={'long_term'}>Long Term</MenuItem>
         </Select>
+        {!this.props.compactView
+          ? <>
+              <FormHelperText>* Changing time range</FormHelperText>
+              <FormHelperText>will reset selection *</FormHelperText>
+            </>
+          : <>
+              <FormHelperText>* Changing time</FormHelperText>
+              <FormHelperText>range will</FormHelperText>
+              <FormHelperText>reset selection *</FormHelperText>
+            </>
+        }
       </FormControl>
     );
   }

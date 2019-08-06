@@ -7,7 +7,9 @@ import {
 import {
   TopTracks, TopArtists, TopGenres, Results, NumSelected, Label,
 } from '../Components/DataDisplay';
-import { StartButton, ResetButton, ExportPlaylist } from '../Components/Control';
+import {
+  StartButton, ResetButton, ExportPlaylist, TimeRangeSelector,
+} from '../Components/Control';
 
 
 const styles = {
@@ -41,11 +43,16 @@ const styles = {
     right: 10,
     top: 200,
   },
+  timeRangeSelector: {
+    position: 'fixed',
+    right: 5,
+    top: 250,
+  },
 };
 
 function StandardView({
-  accessToken, profileData, topTracks, topArtists, topGenres, handleSeedSelect,
-  numSelected, results, fetchResults, resetHandler,
+  accessToken, profileData, topTracks, topArtists, topGenres, results,
+  numSelected, handleSeedSelect, fetchResults, resetHandler, handleTimeRangeSelection,
 }) {
   return (
     <>
@@ -107,6 +114,11 @@ function StandardView({
         <Grid item xs style={styles.resetButton}>
           <ResetButton
             resetHandler={resetHandler}
+          />
+        </Grid>
+        <Grid item xs style={styles.timeRangeSelector}>
+          <TimeRangeSelector
+            selectionHandler={handleTimeRangeSelection}
           />
         </Grid>
       </Grid>
