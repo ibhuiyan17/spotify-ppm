@@ -171,9 +171,6 @@ async function getTargetRecommendations(spotifyInstance, requestObj) {
   }); */
 
   try {
-    // console.log('yeet: ', (await spotifyInstance.getRecommendations(searchParams)).tracks);
-    // return (await spotifyInstance.getRecommendations(searchParams));
-
     return ((await spotifyInstance.getRecommendations(searchParams)).tracks).map(trackObj => ({
       trackID: trackObj.id,
       name: trackObj.name,

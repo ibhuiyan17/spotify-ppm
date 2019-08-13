@@ -30,7 +30,7 @@
     "heroku"
   ],
   "author": "Ibtida Bhuiyan",
-  "license": "ISC",
+  "license": "AGPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/ibhuiyan17/spotify-ppm/issues"
   },

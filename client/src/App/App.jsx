@@ -31,7 +31,9 @@ class App extends Component {
       topTracks: [],
       topArtists: [],
       topGenres: [],
+      enoughData: true, // determines if there is enough user data
       featureAnalysis: {},
+
       numSelected: 0,
       results: [],
     };
@@ -184,6 +186,8 @@ class App extends Component {
 
   // Fetch user's spotify data from backend server and set state.
   async fetchSpotifyData() {
+    this.setState({ enoughData: true });
+
     // check if requested data is cached
     const range = this.state.timeRange;
     let cached = false;
@@ -209,6 +213,13 @@ class App extends Component {
             time_range: this.state.timeRange,
           },
         });
+
+        // Render different component if not enough data
+        if (topTracks.length === 0 && topArtists.length === 0) {
+          this.setState({ enoughData: false });
+
+          return; // break out of func.
+        }
 
         // store to cache
         this.dataCache[range].tracks = topTracks;
@@ -279,7 +290,7 @@ class App extends Component {
 
   render() {
     const viewProps = pick(this.state, [ // filter selected props to send to views
-      'accessToken', 'profileData', 'topTracks', 'topArtists', 'topGenres', 'results', 'numSelected',
+      'accessToken', 'profileData', 'topTracks', 'topArtists', 'topGenres', 'results', 'numSelected', 'enoughData',
     ]);
 
     return (

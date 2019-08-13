@@ -116,9 +116,17 @@ class CompactView extends Component {
     return (
       <>
         <Grid>
-          <Grid item xs>
-            {this.displaySelectedComponent()}
-          </Grid>
+          {this.props.enoughData
+            ? <Grid item xs>
+                {this.displaySelectedComponent()}
+              </Grid>
+            : <Label
+                style={{ marginLeft: 10, marginRight: '25%', marginTop: 10 }}
+                text="Not enough data, try a longer time range"
+                variant="h6"
+                color="inherit"
+              />
+          }
           <Grid item xs style={styles.navBar}>
             <BottomNavBar
               handler={this.displayHandler}

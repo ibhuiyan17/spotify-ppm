@@ -27,10 +27,8 @@ var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 var redirect_uri = process.env.REDIRECT_URI;
 var app_uri = process.env.APP_URI;
 
-/*
-var redirect_uri = 'http://localhost:3001/callback';
-var app_uri = 'http://localhost:3000/?';
-*/
+// var redirect_uri = 'http://localhost:3001/callback';
+// var app_uri = 'http://localhost:3000/?';
 
 /* ---------------------------------------- Authentication Routes ---------------------------------------- */
 var stateKey = 'spotify_auth_state';

@@ -51,55 +51,65 @@ const styles = {
 };
 
 function StandardView({
-  accessToken, profileData, topTracks, topArtists, topGenres, results,
-  numSelected, handleSeedSelect, fetchResults, resetHandler, handleTimeRangeSelection,
+  accessToken, profileData, topTracks, topArtists, topGenres, results, numSelected,
+  enoughData, handleSeedSelect, fetchResults, resetHandler, handleTimeRangeSelection,
 }) {
   return (
     <>
       <Grid container spacing={1}>
-        <Grid item xs={4}>
-          <Label style={styles.topLabel} text="Your Top Tracks" variant="h6" color="secondary"/>
-          <Paper style={styles.Paper} >
-            <TopTracks
-              trackList={topTracks}
-              seedHandler={handleSeedSelect}
+        {enoughData
+          ? <>
+              <Grid item xs={4}>
+                <Label style={styles.topLabel} text="Your Top Tracks" variant="h6" color="secondary"/>
+                <Paper style={styles.Paper} >
+                  <TopTracks
+                    trackList={topTracks}
+                    seedHandler={handleSeedSelect}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={4}>
+                <Label style={styles.topLabel} text="Your Top Artists" variant="h6" color="secondary"/>
+                <Paper style={styles.Paper}>
+                  <TopArtists
+                    artistList={topArtists}
+                    seedHandler={handleSeedSelect}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={4}>
+                <Label style={styles.topLabel} text="Your Top Genres" variant="h6" color="secondary"/>
+                <Paper style={styles.Paper}>
+                  <TopGenres
+                    genreList={topGenres}
+                    seedHandler={handleSeedSelect}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                {results.length !== 0
+                  ? <>
+                      <Label style={styles.resultLabel} text="Results" variant="h3" color="secondary"/>
+                      <ExportPlaylist
+                        accessToken={accessToken}
+                        userID={profileData.id}
+                        playlist={results}
+                      />
+                      <Results
+                        trackList={results}
+                      />
+                    </>
+                  : null
+                }
+              </Grid>
+            </>
+          : <Label
+              style={{ marginLeft: 40, marginTop: 40 }}
+              text="Not enough data, try a longer time range"
+              variant="h4"
+              color="inherit"
             />
-          </Paper>
-        </Grid>
-        <Grid item xs={4}>
-          <Label style={styles.topLabel} text="Your Top Artists" variant="h6" color="secondary"/>
-          <Paper style={styles.Paper}>
-            <TopArtists
-              artistList={topArtists}
-              seedHandler={handleSeedSelect}
-            />
-          </Paper>
-        </Grid>
-        <Grid item xs={4}>
-          <Label style={styles.topLabel} text="Your Top Genres" variant="h6" color="secondary"/>
-          <Paper style={styles.Paper}>
-            <TopGenres
-              genreList={topGenres}
-              seedHandler={handleSeedSelect}
-            />
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          {results.length !== 0
-            ? <>
-                <Label style={styles.resultLabel} text="Results" variant="h3" color="secondary"/>
-                <ExportPlaylist
-                  accessToken={accessToken}
-                  userID={profileData.id}
-                  playlist={results}
-                />
-                <Results
-                  trackList={results}
-                />
-              </>
-            : null
-          }
-        </Grid>
+        }
         <Grid item xs style={styles.numSelected}>
           <NumSelected
             count={numSelected}

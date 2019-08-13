@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "engines": {
     "node": "12.x",
     "npm": "6.9.0"
