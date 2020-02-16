@@ -14,7 +14,8 @@ import { TitleBar } from './Components/AppBars';
 import { LandingPage, StandardView, CompactView } from './Views';
 
 // const backendUrl = 'http://localhost:3001';
-const backendUrl = 'https://spotify-ppm-server.herokuapp.com';
+// const backendUrl = 'https://spotify-ppm-server.herokuapp.com';
+const backendUrl = 'http://spotify-ppm-server.herokuapp.com';
 
 
 class App extends Component {
