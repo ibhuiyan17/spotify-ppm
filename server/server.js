@@ -21,15 +21,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// var client_id = process.env.SPOTIFY_CLIENT_ID;
-var client_id = '3ccf5cf4aa5d4816b9128d9b59fb8ff5'
-// var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-var client_secret = 'e7e0ab7ba3ca4e09af816b7c7173d0dc'
+var client_id = process.env.SPOTIFY_CLIENT_ID;
+var client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
-// var redirect_uri = process.env.REDIRECT_URI;
-var redirect_uri = 'https://spotify-ppm-backend.web.app/callback';
-// var app_uri = process.env.APP_URI;
-var app_uri = 'https://spotify-ppm.web.app/?'
+var redirect_uri = process.env.REDIRECT_URI;
+var app_uri = process.env.APP_URI;
+
 
 // var redirect_uri = 'http://localhost:3001/callback';
 // var app_uri = 'http://localhost:3000/?';
