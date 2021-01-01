@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Backend for spotify-ppm. This file only exists to install the backend to Heroku.",
   "engines": {
-    "node": "12.x",
-    "npm": "6.9.0"
+    "node": "12.x"
   },
   "cacheDirectories": [
     "node_modules"
@@ -29,7 +28,7 @@
     "lodash.pick": "^4.4.0",
     "nodemon": "^1.19.1",
     "querystring": "~0.2.0",
-    "request": "~2.83.0",
+    "request": "^2.88.2",
     "simple-statistics": "^7.0.2"
   }
 }
