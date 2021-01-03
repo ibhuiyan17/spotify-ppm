@@ -4,8 +4,8 @@
 echo $'\n\ncopying server and client directories of src into external deployment folder...\n'
 
 rsync -av --progress /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm/server/ /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm-heroku/server/
-rsync -av --progress /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm/client/ /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm-herokuclient/ --exclude node_modules
-rsync -av --progress /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm/alerts/ /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm-heroku/alerts-server/alerts/
+rsync -av --progress /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm/client/ /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm-heroku/client/ --exclude node_modules
+rsync -av --progress /Users/ibtidabhuiyan/Desktop/Dev/spotify-ppm/alerts/ /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm-heroku/alerts-server/alerts/ --exclude env
 
 echo $'\n..finished copying to deployment, navigate into the deployments directory to push changes to heroku\n'
 echo $'\ncd /Users/ibtidabhuiyan/Desktop/Dev/deployments/spotify-ppm-heroku/\n'

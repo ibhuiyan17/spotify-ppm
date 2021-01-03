@@ -19,19 +19,35 @@ current_time = datetime.now(
 print("Scheduled job, run at: ", current_time)
 
 # HEAD request for http://www.spotify-ppm.com/ and check status code
-status = requests.head('http://www.spotify-ppm.com/').status_code
-if status != 200:
+client_status = requests.head('http://www.spotify-ppm.com/').status_code
+server_status = requests.head('https://spotify-ppm-server.herokuapp.com/').status_code
+
+client_down = client_status != 200
+server_down = server_status != 200
+
+if client_down or server_down:    
     # and set the environment variables. See http://twil.io/secure
     account_sid = os.environ['TWILIO_ACCOUNT_SID']
     auth_token = os.environ['TWILIO_AUTH_TOKEN']
     client = Client(account_sid, auth_token)
 
+    info = "ALERT FOR spotify-ppm. "
+    if client_down and server_down:
+        info += "Both client and server are down. HEAD requests returned statuses client=" + str(client_status) + " server=" + str(server_status) + ". "
+    elif client_down:
+        info += "Client down. HEAD request returned status=" + str(client_status) + ". "
+    else: # server down
+        info += "Server down. HEAD request returned status=" + str(server_status) + ". "
+    info += "Test run on " + current_time
+
     # Send an alert text through Twilio
     message = client.messages.create(
-        body="ALERT FOR spotify-ppm. HEAD request returned status=" + status + " at " + current_time,
+        body=info,
         from_=os.environ['TWILIO_FROM'],
         to=os.environ['TWILIO_TO']
     )
+
+    print("Alert sent through TWILIO: " + info)
 
     # TODO: auto re-deploy
 else:
