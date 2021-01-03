@@ -1,0 +1,4 @@
+.DS_Store
+env/
+set_local_env_vars.py
+test.py
